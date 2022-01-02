@@ -7,6 +7,7 @@ local ICON_CANT_BUILD = "󰀒" --redgem
 local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
 local KEY_CRAFT_INPUT = GLOBAL.KEY_F1
 local KEY_CRAFT_ALT = GLOBAL.KEY_C
+local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
 
 local L18N_RECIPE_NAMES_MAP = {
 	-- Simple: set 1
@@ -169,6 +170,23 @@ local L18N_RECIPE_NAMES_MAP = {
 	["eyeturret_item"] = GLOBAL.STRINGS.NAMES.EYETURRET_ITEM
 }
 
+local function getItemNames()
+	local keyset={}
+	local n=0
+	
+	for k,v in pairs(GLOBAL.AllRecipes) do
+		--todo: if unlocked
+	  n=n+1
+	  keyset[n]=k
+	end
+
+	return keyset
+end
+
+local function sendMessage(msg)
+	GLOBAL.ThePlayer.components.talker:Say(ICON_MODE.." "..msg)
+end
+
 local function isPlayerAvailable()
 	local DST = GLOBAL.TheSim:GetGameID() == "DST"
 	return DST and GLOBAL.ThePlayer ~= nil
@@ -214,6 +232,8 @@ local function craftItem(recipeName)
 		--else
 			--GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't know the recipe.")
 		--end
+	else
+		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." No such item.")
 	end
 end
 
@@ -227,8 +247,7 @@ GLOBAL.AddModUserCommand("oma", "craft", {
 	localfn = function(params, caller)
 		craftItem(params.n)
 	end
-})
-
+})	
 
 
 require "util"
@@ -278,6 +297,9 @@ function CraftInput:OnBecomeInactive()
     if GLOBAL.ThePlayer ~= nil and GLOBAL.ThePlayer.HUD ~= nil then
         GLOBAL.ThePlayer.HUD.controls.networkchatqueue:Show()
     end
+
+	---self:Close()
+	--sendMessage("onBecomeInactive")
 end
 
 function CraftInput:GetHelpText()
@@ -286,20 +308,15 @@ function CraftInput:GetHelpText()
 
     table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
 
-    if self.whisper then
-        table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.CraftInput.HELP_SAY)
-        table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.CraftInput.HELP_WHISPER)
-    else
-        table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.CraftInput.HELP_WHISPER)
-        table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.CraftInput.HELP_SAY)
-    end
+	table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.CraftInput.HELP_WHISPER)
+	table.insert(t,  GLOBAL.TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.CraftInput.HELP_SAY)
 
     return table.concat(t, "  ")
 end
 
 function CraftInput:OnControl(control, down)
-	
-	GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." OnControl()")
+	sendMessage("bla")
+	--GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." OnControl()")
     if self.runtask ~= nil or CraftInput._base.OnControl(self, control, down) then return true end
 
     if self.networkchatqueue:OnChatControl(control, down) then return true end
@@ -310,6 +327,7 @@ function CraftInput:OnControl(control, down)
     end
 
 	if not down and (control == CONTROL_CANCEL) then
+		sendMessage("CONTROL_CANCEL")
 		self:Close()
 		return true
 	end
@@ -357,7 +375,8 @@ end
 
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
-	craftItem(chat_string)
+	local item = string.sub(chat_string, 2)
+	craftItem(item)
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then
         return
@@ -406,11 +425,7 @@ function CraftInput:DoInit()
 	    self.chat_type:SetPosition(-505, 0, 0)
 	    self.chat_type:SetRegionSize(chat_type_width, label_height)
 	    self.chat_type:SetHAlign(GLOBAL.ANCHOR_RIGHT)
-	    if self.whisper then
-	        self.chat_type:SetString(GLOBAL.STRINGS.UI.CHATINPUTSCREEN.WHISPER)
-	    else
-	        self.chat_type:SetString("Craft item:")
-	    end
+	    self.chat_type:SetString("Craft item:")
 	    self.chat_type:SetColour(.6, .6, .6, 1)
 	end
 
@@ -451,13 +466,25 @@ function CraftInput:DoInit()
     self.networkchatqueue = self.chat_queue_root:AddChild(ScrollableChatQueue())
 
     self.chat_edit:EnableWordPrediction({width = 800, mode=GLOBAL.Profile:GetChatAutocompleteMode()})
-    self.chat_edit:AddWordPredictionDictionary(Emoji.GetWordPredictionDictionary())
-    self.chat_edit:AddWordPredictionDictionary(UserCommands.GetEmotesWordPredictionDictionary())
+    --self.chat_edit:AddWordPredictionDictionary(Emoji.GetWordPredictionDictionary())
 
-    self.chat_edit:SetString("")
+	
+	local data = {
+		words = getItemNames(),
+		delim = "#",
+	}
+	data.GetDisplayString = function(word) return word end
+
+	self.chat_edit:AddWordPredictionDictionary(data)
+
+    self.chat_edit:SetString("#")
 end
 
 
+
+local function closePrompt(key)
+	CraftInput:Close()
+end
 
 local function startInput(key)
 	if not isPlayerAvailable() then
@@ -471,3 +498,4 @@ end
 
 
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
+GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
