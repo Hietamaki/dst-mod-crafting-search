@@ -1,0 +1,4 @@
+v.01
+
+Craft with pressing F1 and typing the name for craft.
+
