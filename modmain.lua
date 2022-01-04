@@ -13,167 +13,15 @@ local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
 
 local lastItem = ""
 
-local L18N_RECIPE_NAMES_MAP = {
-	-- Simple: set 1
-	["axe"] = GLOBAL.STRINGS.NAMES.AXE,
-	["pickaxe"] = GLOBAL.STRINGS.NAMES.PICKAXE,
-	["shovel"] = GLOBAL.STRINGS.NAMES.SHOVEL,
-	["hammer"] = GLOBAL.STRINGS.NAMES.HAMMER,
-	["rope"] = GLOBAL.STRINGS.NAMES.ROPE,
-	["boards"] = GLOBAL.STRINGS.NAMES.BOARDS,
-	["cutstone"] = GLOBAL.STRINGS.NAMES.CUTSTONE,
-	["healingsalve"] = GLOBAL.STRINGS.NAMES.HEALINGSALVE,
-	["armorwood"] = GLOBAL.STRINGS.NAMES.ARMORWOOD,
-	["spear"] = GLOBAL.STRINGS.NAMES.SPEAR,
-	["hambat"] = GLOBAL.STRINGS.NAMES.HAMBAT,
-	["footballhat"] = GLOBAL.STRINGS.NAMES.FOOTBALLHAT,
-	-- Simple: set 2
-	["campfire"] = GLOBAL.STRINGS.NAMES.CAMPFIRE,
-	["torch"] = GLOBAL.STRINGS.NAMES.TORCH,
-	["boomerang"] = GLOBAL.STRINGS.NAMES.BOOMERANG,
-	["icestaff"] = GLOBAL.STRINGS.NAMES.ICESTAFF,
-	["treasurechest"] = GLOBAL.STRINGS.NAMES.TREASURECHEST,
-	["researchlab"] = GLOBAL.STRINGS.NAMES.RESEARCHLAB,
-	["fast_farmplot"] = GLOBAL.STRINGS.NAMES.FAST_FARMPLOT,
-	["cookpot"] = GLOBAL.STRINGS.NAMES.COOKPOT,
-	["trap_teeth"] = GLOBAL.STRINGS.NAMES.TRAP_TEETH,
-	["marblebean"] = GLOBAL.STRINGS.NAMES.MARBLEBEAN,
-	["reviver"] = GLOBAL.STRINGS.NAMES.REVIVER,
-	["coldfire"] = GLOBAL.STRINGS.NAMES.COLDFIRE,
-	-- Advanced
-	["axe"] = GLOBAL.STRINGS.NAMES.AXE,
-	["pickaxe"] = GLOBAL.STRINGS.NAMES.PICKAXE,
-	["shovel"] = GLOBAL.STRINGS.NAMES.SHOVEL,
-	["hammer"] = GLOBAL.STRINGS.NAMES.HAMMER,
-	["pitchfork"] = GLOBAL.STRINGS.NAMES.PITCHFORK,
-	["razor"] = GLOBAL.STRINGS.NAMES.RAZOR,
-	["featherpencil"] = GLOBAL.STRINGS.NAMES.FEATHERPENCIL,
-	["saltlick"] = GLOBAL.STRINGS.NAMES.SALTLICK,
-	["goldenaxe"] = GLOBAL.STRINGS.NAMES.GOLDENAXE,
-	["goldenpickaxe"] = GLOBAL.STRINGS.NAMES.GOLDENPICKAXE,
-	["goldenshovel"] = GLOBAL.STRINGS.NAMES.GOLDENSHOVEL,
-	["saddle_basic"] = GLOBAL.STRINGS.NAMES.SADDLE_BASIC,
-	["campfire"] = GLOBAL.STRINGS.NAMES.CAMPFIRE,
-	["firepit"] = GLOBAL.STRINGS.NAMES.FIREPIT,
-	["torch"] = GLOBAL.STRINGS.NAMES.TORCH,
-	["coldfire"] = GLOBAL.STRINGS.NAMES.COLDFIRE,
-	["coldfirepit"] = GLOBAL.STRINGS.NAMES.COLDFIREPIT,
-	["minerhat"] = GLOBAL.STRINGS.NAMES.MINERHAT,
-	["molehat"] = GLOBAL.STRINGS.NAMES.MOLEHAT,
-	["pumpkin_lantern"] = GLOBAL.STRINGS.NAMES.PUMPKIN_LANTERN,
-	["lantern"] = GLOBAL.STRINGS.NAMES.LANTERN,
-	["mushroom_light"] = GLOBAL.STRINGS.NAMES.MUSHROOM_LIGHT,
-	["mushroom_light2"] = GLOBAL.STRINGS.NAMES.MUSHROOM_LIGHT2,
-	["lighter"] = GLOBAL.STRINGS.NAMES.LIGHTER,
-	["reviver"] = GLOBAL.STRINGS.NAMES.REVIVER,
-	["healingsalve"] = GLOBAL.STRINGS.NAMES.HEALINGSALVE,
-	["bandage"] = GLOBAL.STRINGS.NAMES.BANDAGE,
-	["lifeinjector"] = GLOBAL.STRINGS.NAMES.LIFEINJECTOR,
-	["trap"] = GLOBAL.STRINGS.NAMES.TRAP,
-	["birdtrap"] = GLOBAL.STRINGS.NAMES.BIRDTRAP,
-	["bugnet"] = GLOBAL.STRINGS.NAMES.BUGNET,
-	["fishingrod"] = GLOBAL.STRINGS.NAMES.FISHINGROD,
-	["umbrella"] = GLOBAL.STRINGS.NAMES.UMBRELLA,
-	["heatrock"] = GLOBAL.STRINGS.NAMES.HEATROCK,
-	["backpack"] = GLOBAL.STRINGS.NAMES.BACKPACK,
-	["tent"] = GLOBAL.STRINGS.NAMES.TENT,
-	["slow_farmplot"] = GLOBAL.STRINGS.NAMES.SLOW_FARMPLOT,
-	["fast_farmplot"] = GLOBAL.STRINGS.NAMES.FAST_FARMPLOT,
-	["fertilizer"] = GLOBAL.STRINGS.NAMES.FERTILIZER,
-	["mushroom_farm"] = GLOBAL.STRINGS.NAMES.MUSHROOM_FARM,
-	["beebox"] = GLOBAL.STRINGS.NAMES.BEEBOX,
-	["meatrack"] = GLOBAL.STRINGS.NAMES.MEATRACK,
-	["cookpot"] = GLOBAL.STRINGS.NAMES.COOKPOT,
-	["icebox"] = GLOBAL.STRINGS.NAMES.ICEBOX,
-	["saltbox"] = GLOBAL.STRINGS.NAMES.SALTBOX,
-	["portablecookpot_item"] = GLOBAL.STRINGS.NAMES.PORTABLECOOKPOT_ITEM,
-	["portableblender_item"] = GLOBAL.STRINGS.NAMES.PORTABLEBLENDER_ITEM,
-	["portablespicer_item"] = GLOBAL.STRINGS.NAMES.PORTABLESPICER_ITEM,
-	["researchlab"] = GLOBAL.STRINGS.NAMES.RESEARCHLAB,
-	["researchlab2"] = GLOBAL.STRINGS.NAMES.RESEARCHLAB2,
-	["transistor"] = GLOBAL.STRINGS.NAMES.TRANSISTOR,
-	["seafaring_prototyper"] = GLOBAL.STRINGS.NAMES.SEAFARING_PROTOTYPER,
-	["cartographydesk"] = GLOBAL.STRINGS.NAMES.CARTOGRAPHYDESK,
-	["sculptingtable"] = GLOBAL.STRINGS.NAMES.SCULPTINGTABLE,
-	["winterometer"] = GLOBAL.STRINGS.NAMES.WINTEROMETER,
-	["rainometer"] = GLOBAL.STRINGS.NAMES.RAINOMETER,
-	["gunpowder"] = GLOBAL.STRINGS.NAMES.GUNPOWDER,
-	["lightning_rod"] = GLOBAL.STRINGS.NAMES.LIGHTNING_ROD,
-	["firesuppressor"] = GLOBAL.STRINGS.NAMES.FIRESUPPRESSOR,
-	["spear"] = GLOBAL.STRINGS.NAMES.SPEAR,
-	["hambat"] = GLOBAL.STRINGS.NAMES.HAMBAT,
-	["armorwood"] = GLOBAL.STRINGS.NAMES.ARMORWOOD,
-	["footballhat"] = GLOBAL.STRINGS.NAMES.FOOTBALLHAT,
-	["boomerang"] = GLOBAL.STRINGS.NAMES.BOOMERANG,
-	["trap_teeth"] = GLOBAL.STRINGS.NAMES.TRAP_TEETH,
-	["blowdart_sleep"] = GLOBAL.STRINGS.NAMES.BLOWDART_SLEEP,
-	["blowdart_fire"] = GLOBAL.STRINGS.NAMES.BLOWDART_FIRE,
-	["blowdart_pipe"] = GLOBAL.STRINGS.NAMES.BLOWDART_PIPE,
-	["blowdart_yellow"] = GLOBAL.STRINGS.NAMES.BLOWDART_YELLOW,
-	["spear_wathgrithr"] = GLOBAL.STRINGS.NAMES.SPEAR_WATHGRITHR,
-	["wathgrithrhat"] = GLOBAL.STRINGS.NAMES.WATHGRITHRHAT,
-	["treasurechest"] = GLOBAL.STRINGS.NAMES.TREASURECHEST,
-	["homesign"] = GLOBAL.STRINGS.NAMES.HOMESIGN,
-	["minisign_item"] = GLOBAL.STRINGS.NAMES.MINISIGN_ITEM,
-	["fence_gate_item"] = GLOBAL.STRINGS.NAMES.FENCE_GATE_ITEM,
-	["fence_item"] = GLOBAL.STRINGS.NAMES.FENCE_ITEM,
-	["pighouse"] = GLOBAL.STRINGS.NAMES.PIGHOUSE,
-	["rabbithouse"] = GLOBAL.STRINGS.NAMES.RABBITHOUSE,
-	["birdcage"] = GLOBAL.STRINGS.NAMES.BIRDCAGE,
-	["scarecrow"] = GLOBAL.STRINGS.NAMES.SCARECROW,
-	["turf_road"] = GLOBAL.STRINGS.NAMES.TURF_ROAD,
-	["turf_dragonfly"] = GLOBAL.STRINGS.NAMES.TURF_DRAGONFLY,
-	["dragonflychest"] = GLOBAL.STRINGS.NAMES.DRAGONFLYCHEST,
-	["rope"] = GLOBAL.STRINGS.NAMES.ROPE,
-	["boards"] = GLOBAL.STRINGS.NAMES.BOARDS,
-	["cutstone"] = GLOBAL.STRINGS.NAMES.CUTSTONE,
-	["papyrus"] = GLOBAL.STRINGS.NAMES.PAPYRUS,
-	["waxpaper"] = GLOBAL.STRINGS.NAMES.WAXPAPER,
-	["beeswax"] = GLOBAL.STRINGS.NAMES.BEESWAX,
-	["marblebean"] = GLOBAL.STRINGS.NAMES.MARBLEBEAN,
-	["bearger_fur"] = GLOBAL.STRINGS.NAMES.BEARGER_FUR,
-	["nightmarefuel"] = GLOBAL.STRINGS.NAMES.NIGHTMAREFUEL,
-	["purplegem"] = GLOBAL.STRINGS.NAMES.PURPLEGEM,
-	["moonrockcrater"] = GLOBAL.STRINGS.NAMES.MOONROCKCRATER,
-	["malbatross_feathered_weave"] = GLOBAL.STRINGS.NAMES.MALBATROSS_FEATHERED_WEAVE,
-	["researchlab4"] = GLOBAL.STRINGS.NAMES.RESEARCHLAB4,
-	["researchlab3"] = GLOBAL.STRINGS.NAMES.RESEARCHLAB3,
-	["resurrectionstatue"] = GLOBAL.STRINGS.NAMES.RESURRECTIONSTATUE,
-	["amulet"] = GLOBAL.STRINGS.NAMES.AMULET,
-	["blueamulet"] = GLOBAL.STRINGS.NAMES.BLUEAMULET,
-	["purpleamulet"] = GLOBAL.STRINGS.NAMES.PURPLEAMULET,
-	["firestaff"] = GLOBAL.STRINGS.NAMES.FIRESTAFF,
-	["icestaff"] = GLOBAL.STRINGS.NAMES.ICESTAFF,
-	["wereitem_goose"] = GLOBAL.STRINGS.NAMES.WEREITEM_GOOSE,
-	["wereitem_beaver"] = GLOBAL.STRINGS.NAMES.WEREITEM_BEAVER,
-	["wereitem_moose"] = GLOBAL.STRINGS.NAMES.WEREITEM_MOOSE,
-	["abigail_flower"] = GLOBAL.STRINGS.NAMES.ABIGAIL_FLOWER,
-	["sewing_kit"] = GLOBAL.STRINGS.NAMES.SEWING_KIT,
-	["flowerhat"] = GLOBAL.STRINGS.NAMES.FLOWERHAT,
-	["strawhat"] = GLOBAL.STRINGS.NAMES.STRAWHAT,
-	["tophat"] = GLOBAL.STRINGS.NAMES.TOPHAT,
-	["rainhat"] = GLOBAL.STRINGS.NAMES.RAINHAT,
-	["beefalohat"] = GLOBAL.STRINGS.NAMES.BEEFALOHAT,
-	["winterhat"] = GLOBAL.STRINGS.NAMES.WINTERHAT,
-	["kelphat"] = GLOBAL.STRINGS.NAMES.KELPHAT,
-	["featherhat"] = GLOBAL.STRINGS.NAMES.FEATHERHAT,
-	["cane"] = GLOBAL.STRINGS.NAMES.CANE,
-	["eyebrellahat"] = GLOBAL.STRINGS.NAMES.EYEBRELLAHAT,
-	["hawaiianshirt"] = GLOBAL.STRINGS.NAMES.HAWAIIANSHIRT,
-	["thulecite"] = GLOBAL.STRINGS.NAMES.THULECITE,
-	["wall_ruins_item"] = GLOBAL.STRINGS.NAMES.WALL_RUINS_ITEM,
-	["orangeamulet"] = GLOBAL.STRINGS.NAMES.ORANGEAMULET,
-	["yellowamulet"] = GLOBAL.STRINGS.NAMES.YELLOWAMULET,
-	["greenamulet"] = GLOBAL.STRINGS.NAMES.GREENAMULET,
-	["orangestaff"] = GLOBAL.STRINGS.NAMES.ORANGESTAFF,
-	["yellowstaff"] = GLOBAL.STRINGS.NAMES.YELLOWSTAFF,
-	["greenstaff"] = GLOBAL.STRINGS.NAMES.GREENSTAFF,
-	["ruinshat"] = GLOBAL.STRINGS.NAMES.RUINSHAT,
-	["armorruins"] = GLOBAL.STRINGS.NAMES.ARMORRUINS,
-	["ruins_bat"] = GLOBAL.STRINGS.NAMES.RUINS_BAT,
-	["eyeturret_item"] = GLOBAL.STRINGS.NAMES.EYETURRET_ITEM
-}
+function table_invert(t)
+	local s={}
+	for k,v in pairs(t) do
+	  s[v]=k
+	end
+	return s
+ end
 
+ 
 local function getItemNames()
 	local keyset={}
 	local n=0
@@ -214,8 +62,6 @@ local function craftItem(recipeName)
 	end
 	
 	local recipe = GLOBAL.GetValidRecipe(recipeName)
-	local localizedRecipeName = recipe == nil and "I have no idea about '"..recipeName.."'" or L18N_RECIPE_NAMES_MAP[recipeName]
-	localizedRecipeName = localizedRecipeName == nil and recipeName or localizedRecipeName
 	
 	local builder = GLOBAL.ThePlayer.replica.builder
 	local talker = GLOBAL.ThePlayer.components.talker
@@ -225,7 +71,7 @@ local function craftItem(recipeName)
 		return
 	end
 
-	--localizedRecipeName = recipe.product
+	local localizedRecipeName = GLOBAL.STRINGS.NAMES[string.upper(recipe.name)]
 
 	if not builder:KnowsRecipe(recipeName) then
 		talker:Say(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
