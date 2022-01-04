@@ -5,9 +5,13 @@ local ICON_CRAFT = "󰀏" --lightbulb
 local ICON_CANT_BUILD = "󰀒" --redgem
 
 local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
+local KEY_RESET = GLOBAL.KEY_F4
 local KEY_CRAFT_INPUT = GLOBAL.KEY_F1
+local KEY_CRAFT_LAST = GLOBAL.KEY_F2
 local KEY_CRAFT_ALT = GLOBAL.KEY_C
 local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
+
+local lastItem = ""
 
 local L18N_RECIPE_NAMES_MAP = {
 	-- Simple: set 1
@@ -213,41 +217,49 @@ local function craftItem(recipeName)
 	local localizedRecipeName = recipe == nil and "I have no idea about '"..recipeName.."'" or L18N_RECIPE_NAMES_MAP[recipeName]
 	localizedRecipeName = localizedRecipeName == nil and recipeName or localizedRecipeName
 	
+	local builder = GLOBAL.ThePlayer.replica.builder
+	local talker = GLOBAL.ThePlayer.components.talker
+
 	if recipe == nil then
-		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." No such item.")
-		return
-	end
-	
-	if not GLOBAL.ThePlayer.replica.builder:KnowsRecipe(recipeName) then
-		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't know the recipe.")
+		talker:Say(ICON_CANT_BUILD.." No such item.")
 		return
 	end
 
-	if not GLOBAL.ThePlayer.replica.builder:CanBuild(recipeName) then
+	--localizedRecipeName = recipe.product
+
+	if not builder:KnowsRecipe(recipeName) then
+		talker:Say(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
+		return
+	end
+
+	if not builder:CanBuild(recipeName) then
 		for i, v in ipairs(recipe.ingredients) do
-			if not GLOBAL.ThePlayer.replica.builder.inst.replica.inventory:Has(v.type, math.max(1, GLOBAL.RoundBiasedUp(v.amount * GLOBAL.ThePlayer.replica.builder:IngredientMod()))) then
-				GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+			if not builder.inst.replica.inventory:Has(v.type, math.max(1, GLOBAL.RoundBiasedUp(v.amount * builder:IngredientMod()))) then
+				local many = ""
+				if v.amount > 1 then
+					many = v.amount.." "
+				end
+				talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
 				return false
 			end
 		end
 		for i, v in ipairs(recipe.character_ingredients) do
-			if not GLOBAL.ThePlayer.replica.builder:HasCharacterIngredient(v) then
-				GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
-
+			if not builder:HasCharacterIngredient(v) then
+				talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
 				return false
             end
         end
-		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have the resources.")
+		talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have the resources.")
 		return
 	end
 
-	GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." Building "..localizedRecipeName)
+	talker:Say(ICON_CRAFT.." Building "..localizedRecipeName)
 	
 	if recipe.placer == nil then
-		GLOBAL.ThePlayer.replica.builder:MakeRecipeFromMenu(recipe, nil)
+		builder:MakeRecipeFromMenu(recipe, nil)
 	else
-		if not GLOBAL.ThePlayer.replica.builder:IsBuildBuffered(recipeName) then
-			GLOBAL.ThePlayer.replica.builder:BufferBuild(recipeName)
+		if not builder:IsBuildBuffered(recipeName) then
+			builder:BufferBuild(recipeName)
 		end
 		GLOBAL.ThePlayer.components.playercontroller:StartBuildPlacementMode(recipe, nil)
 	end
@@ -391,6 +403,7 @@ function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
 	local item = string.sub(chat_string, 2)
 	craftItem(item)
+	lastItem = item
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then
         return
@@ -509,7 +522,18 @@ local function startInput(key)
 	TheFrontEnd:PushScreen(CraftInput(false))
 end
 
+local function craftLast()
+	if lastItem ~= "" then
+		craftItem(lastItem)
+	end
+end
 
+
+local function reset()
+	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
+end
 
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
+GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
+GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
