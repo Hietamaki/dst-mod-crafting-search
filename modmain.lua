@@ -213,27 +213,43 @@ local function craftItem(recipeName)
 	local localizedRecipeName = recipe == nil and "I have no idea about '"..recipeName.."'" or L18N_RECIPE_NAMES_MAP[recipeName]
 	localizedRecipeName = localizedRecipeName == nil and recipeName or localizedRecipeName
 	
-	if recipe ~= nil then
-		--if GLOBAL.ThePlayer.replica.builder:KnowsRecipe(recipeName) then
-			if GLOBAL.ThePlayer.replica.builder:CanBuild(recipeName) then
-				GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." "..localizedRecipeName)
-				
-				if recipe.placer == nil then
-					GLOBAL.ThePlayer.replica.builder:MakeRecipeFromMenu(recipe, nil)
-				else
-					if not GLOBAL.ThePlayer.replica.builder:IsBuildBuffered(recipeName) then
-						GLOBAL.ThePlayer.replica.builder:BufferBuild(recipeName)
-					end
-					GLOBAL.ThePlayer.components.playercontroller:StartBuildPlacementMode(recipe, nil)
-				end
-			else
-				GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? Recipe? Resources?")
-			end
-		--else
-			--GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't know the recipe.")
-		--end
-	else
+	if recipe == nil then
 		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." No such item.")
+		return
+	end
+	
+	if not GLOBAL.ThePlayer.replica.builder:KnowsRecipe(recipeName) then
+		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't know the recipe.")
+		return
+	end
+
+	if not GLOBAL.ThePlayer.replica.builder:CanBuild(recipeName) then
+		for i, v in ipairs(recipe.ingredients) do
+			if not GLOBAL.ThePlayer.replica.builder.inst.replica.inventory:Has(v.type, math.max(1, GLOBAL.RoundBiasedUp(v.amount * GLOBAL.ThePlayer.replica.builder:IngredientMod()))) then
+				GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+				return false
+			end
+		end
+		for i, v in ipairs(recipe.character_ingredients) do
+			if not GLOBAL.ThePlayer.replica.builder:HasCharacterIngredient(v) then
+				GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+
+				return false
+            end
+        end
+		GLOBAL.ThePlayer.components.talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have the resources.")
+		return
+	end
+
+	GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." Building "..localizedRecipeName)
+	
+	if recipe.placer == nil then
+		GLOBAL.ThePlayer.replica.builder:MakeRecipeFromMenu(recipe, nil)
+	else
+		if not GLOBAL.ThePlayer.replica.builder:IsBuildBuffered(recipeName) then
+			GLOBAL.ThePlayer.replica.builder:BufferBuild(recipeName)
+		end
+		GLOBAL.ThePlayer.components.playercontroller:StartBuildPlacementMode(recipe, nil)
 	end
 end
 
@@ -315,8 +331,6 @@ function CraftInput:GetHelpText()
 end
 
 function CraftInput:OnControl(control, down)
-	sendMessage("bla")
-	--GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." OnControl()")
     if self.runtask ~= nil or CraftInput._base.OnControl(self, control, down) then return true end
 
     if self.networkchatqueue:OnChatControl(control, down) then return true end

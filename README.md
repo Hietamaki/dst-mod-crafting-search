@@ -40,3 +40,14 @@ Game functions can be run with adding GLOBAL. prefix to functions. Though some d
 - fuzzy search
 - menu päällä -> ei toimivaksi
 - live search (kuvilla)
+- API versio uudempaan?
+- ennakkosyötössä ärsyttävä jos teksti on täysin sama kuin ehdotettu ja ei rakenna suoraan -> voisi siis lähettää tekstin heti kun painaa entteriä (valitsee ennakkosyötön)
+
+1. chess_piece > chess piece. käytännössä lokalisoidut nimet hakuun
+2. erottele resurssi ja reseptivika
+3. kerro mitä uupuu
+4. set hotkey (configure modin asetutksista)
+5. c näppäin ->
+6. esci päällä ei voi avata findia
+7. refaktoroi koodi eri komponentteihin! Onko GLOBAL pakko käyttää vai voiko importtaa?
+8. kuiskaa kaikki viestit pelaajalle pelkästään
