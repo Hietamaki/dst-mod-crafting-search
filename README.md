@@ -51,3 +51,5 @@ Game functions can be run with adding GLOBAL. prefix to functions. Though some d
 6. esci päällä ei voi avata findia
 7. refaktoroi koodi eri komponentteihin! Onko GLOBAL pakko käyttää vai voiko importtaa?
 8. kuiskaa kaikki viestit pelaajalle pelkästään
+9. repeat previous
+10. miten monta esinettä uupuu

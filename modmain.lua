@@ -74,8 +74,13 @@ local function craftItem(recipeName)
 	local localizedRecipeName = GLOBAL.STRINGS.NAMES[string.upper(recipe.name)]
 
 	if not builder:KnowsRecipe(recipeName) then
-		talker:Say(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
-		return
+		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
+			builder:CanLearn(recipe.name) then
+			builder:MakeRecipeFromMenu(recipe, nil)
+		else
+			talker:Say(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
+        	return false
+		end
 	end
 
 	if not builder:CanBuild(recipeName) then
@@ -95,10 +100,16 @@ local function craftItem(recipeName)
 				return false
             end
         end
-		talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have the resources.")
+        for i, v in ipairs(recipe.tech_ingredients) do
+            if not builder:HasTechIngredient(v) then
+				talker:Say(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
+                return false
+            end
+        end
+		talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
 		return
 	end
-
+	
 	talker:Say(ICON_CRAFT.." Building "..localizedRecipeName)
 	
 	if recipe.placer == nil then
