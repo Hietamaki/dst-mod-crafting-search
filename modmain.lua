@@ -5,7 +5,7 @@ local ICON_CRAFT = "󰀏" --lightbulb
 local ICON_CANT_BUILD = "󰀒" --redgem
 
 local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
-local KEY_RESET = GLOBAL.KEY_F4
+local KEY_RESET = GLOBAL.KEY_F5
 local KEY_CRAFT_INPUT = GLOBAL.KEY_F1
 local KEY_CRAFT_LAST = GLOBAL.KEY_F2
 local KEY_CRAFT_ALT = GLOBAL.KEY_C
@@ -21,15 +21,27 @@ function table_invert(t)
 	return s
  end
 
+itemsByName = {}
+
+local function getItemName(recipeName)
+	return GLOBAL.STRINGS.NAMES[string.upper(recipeName)]
+end
  
 local function getItemNames()
+	local builder = GLOBAL.ThePlayer.replica.builder
 	local keyset={}
 	local n=0
 	
 	for k,v in pairs(GLOBAL.AllRecipes) do
-		--todo: if unlocked
-	  n=n+1
-	  keyset[n]=k
+		local recipe = GLOBAL.GetValidRecipe(k)
+		name = getItemName(k)
+		if name ~= nil and recipe ~= nil then
+			--if builder:KnowsRecipe(k) or GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) then
+				n=n+1
+				keyset[n]=string.lower(name)
+				itemsByName[string.lower(name)] = k
+			--end
+		end
 	end
 
 	return keyset
@@ -63,15 +75,15 @@ local function craftItem(recipeName)
 	
 	local recipe = GLOBAL.GetValidRecipe(recipeName)
 	
-	local builder = GLOBAL.ThePlayer.replica.builder
 	local talker = GLOBAL.ThePlayer.components.talker
+	local builder = GLOBAL.ThePlayer.replica.builder
 
 	if recipe == nil then
 		talker:Say(ICON_CANT_BUILD.." No such item.")
 		return
 	end
 
-	local localizedRecipeName = GLOBAL.STRINGS.NAMES[string.upper(recipe.name)]
+	local localizedRecipeName = getItemName(recipe.name)
 
 	if not builder:KnowsRecipe(recipeName) then
 		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
@@ -248,6 +260,7 @@ function CraftInput:OnControl(control, down)
 end
 
 function CraftInput:OnRawKey(key, down)
+	sendMessage("Hmm")
     if self.runtask ~= nil then return true end
     if CraftInput._base.OnRawKey(self, key, down) then
         return true
@@ -258,8 +271,9 @@ end
 
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
-	local item = string.sub(chat_string, 2)
-	craftItem(item)
+	local item = string.lower(chat_string:match( "^%s*(.-)%s*$" ))
+	craftItem(itemsByName[item])
+	--print(itemsByName[item])
 	lastItem = item
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then
@@ -355,13 +369,16 @@ function CraftInput:DoInit()
 	
 	local data = {
 		words = getItemNames(),
-		delim = "#",
+		delim = "",
 	}
-	data.GetDisplayString = function(word) return word end
+
+	--sendMessage("Words "..#(data.words).." / ")
+
+	--data.GetDisplayString = function(word) return word end
 
 	self.chat_edit:AddWordPredictionDictionary(data)
 
-    self.chat_edit:SetString("#")
+    self.chat_edit:SetString(" ")
 end
 
 
