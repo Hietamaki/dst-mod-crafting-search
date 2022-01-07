@@ -53,3 +53,8 @@ Game functions can be run with adding GLOBAL. prefix to functions. Though some d
 8. kuiskaa kaikki viestit pelaajalle pelkästään
 9. repeat previous
 10. miten monta esinettä uupuu
+
+
+-> Spacetus ongelma
+-> Semanttinen haku -> käytä descriptioneita apuna -> (TF-IDF haku)
+-> Custom GUI kuvakkeilla (iso)

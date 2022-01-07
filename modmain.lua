@@ -10,6 +10,7 @@ local KEY_CRAFT_INPUT = GLOBAL.KEY_F1
 local KEY_CRAFT_LAST = GLOBAL.KEY_F2
 local KEY_CRAFT_ALT = GLOBAL.KEY_C
 local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
+local KEY_ENTER = GLOBAL.KEY_ENTER
 
 local lastItem = ""
 
@@ -272,6 +273,7 @@ end
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
 	local item = string.lower(chat_string:match( "^%s*(.-)%s*$" ))
+	item = item:match( "^#*(.-)#*$" )
 	craftItem(itemsByName[item])
 	--print(itemsByName[item])
 	lastItem = item
@@ -294,6 +296,7 @@ local function DoRun(inst, self)
 end
 
 function CraftInput:OnTextEntered()
+	--self.chat_edit:SetString(string.lower(self.chat_edit.string))
     if self.runtask ~= nil then
         self.runtask:Cancel()
     end
@@ -369,7 +372,7 @@ function CraftInput:DoInit()
 	
 	local data = {
 		words = getItemNames(),
-		delim = "",
+		delim = "#",
 	}
 
 	--sendMessage("Words "..#(data.words).." / ")
@@ -378,12 +381,33 @@ function CraftInput:DoInit()
 
 	self.chat_edit:AddWordPredictionDictionary(data)
 
-    self.chat_edit:SetString(" ")
+    self.chat_edit:SetString("#")
+
+	
+	self.chat_edit.OnTextInputted = function(text, k)
+		--self.chat_edit._base.OnRawKey(text, k)
+		print(self.chat_edit:GetString())
+		self.chat_edit:SetString(string.lower(self.chat_edit:GetString()))
+	--	print(type(text))
+		
+		--self.chat_edit:SetString(string.lower(self.chat_edit.string))
+		-- convert upper to lower
+		--if key > 64 and key < 91 then
+		--	key = key + 32
+		--	sendMessage("Hmm "..key)
+		--end
+		--if self.runtask ~= nil then return true end
+		--if ci._base.OnRawKey(self, key, down) then
+		--    return true
+		--end
+
+		return false
+	end
 end
 
 
 
-local function closePrompt(key)
+local function closePrompt()
 	CraftInput:Close()
 end
 
@@ -403,6 +427,24 @@ local function craftLast()
 end
 
 
+local function enterKey()
+	
+	local craft_input = TheFrontEnd:GetActiveScreen()
+	local ci = craft_input.chat_edit.prediction_widget
+	if #(ci.prediction_btns) > 0 then
+		local strItem = ci.prediction_btns[ci.active_prediction_btn].text.string
+		
+		-- Remove #
+		strItem = strItem:match( "^#*(.-)#*$" )
+		--sendMessage("Hmm.. "..strItem)
+		craftItem(itemsByName[strItem])
+		closePrompt()
+		return
+	end
+
+end
+
+
 local function reset()
 	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
 end
@@ -411,3 +453,4 @@ GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
+GLOBAL.TheInput:AddKeyDownHandler(KEY_ENTER, function() enterKey() end)

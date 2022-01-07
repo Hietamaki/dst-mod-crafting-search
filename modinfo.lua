@@ -1,9 +1,9 @@
 name = 'Crafting Search'
-description = 'Type to craft'
+description = 'Type to craft. Works as a finder for searching crafting recipies. F1=Open craft prompt. F2=Repeat last craft.'
 author = 'Hietamaki'
-version = '0.01'
+version = '0.0000000000000000002'
 forumthread = ''
-api_version = 6
+api_version = 7
 priority = 1
 dont_starve_compatible = false
 reign_of_giants_compatible = false

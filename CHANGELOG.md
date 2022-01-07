@@ -1,13 +1,27 @@
 # Version history
 
-- 1 quectoutil: copy paste mod as basis
-- 2 quectoutils: craft spear on command
-- 10 quectoutils: use command to create specific item
-- 100 quectoutils: show craft input with hotkey
-- 1 rontoutil: release on github
-- 2 rontoutils: fix esc issue
-- 3 rontoutils: add readme
-- 4 rontoutils: inform when searched item not found
-- 10 rontoutils: predictive text
-- 20 rontoutils: inform if recipe not known
-- 100 rontoutils: inform missing ingredients
+- 1 qu: unbundle scripts.zip
+- 10 qu: change willow text to test modding
+- 100 qu: research reference mods
+- 200 qu: research basic modding info
+- 1 ru: copy paste mod as basis
+- 2 ru: craft spear on command
+- 10 ru: use command to create specific item
+- 100 ru: show craft input with hotkey
+- 1 yu: release on github
+- 2 yu: fix esc issue
+- 3 yu: add readme
+- 4 yu: inform when searched item not found
+- 10 yu: predictive text
+- 20 yu: inform if recipe not known
+- 100 yu: inform missing ingredients
+- 200 yu: add changelog
+- 300 yu: repeat last recipe F1
+- 400 yu: debug command: reboot F5
+- 500 yu: inform how many missing ingredients required
+- 600 yu: fix missing recipes
+- 1 zu: prototype missing recipe
+- 10 zu: search uses real item names
+- 20 zu: lowercase predictive text
+- 100 zu: choose predicted text directly
+- 200 zu: lowercase text
