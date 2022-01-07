@@ -1,7 +1,7 @@
 name = 'Crafting Search'
-description = 'Type to craft. Works as a finder for searching crafting recipies. F1=Open craft prompt. F2=Repeat last craft.'
-author = 'Hietamaki'
-version = '0.0000000000000000002'
+description = 'Type to craft. Works as a finder for searching crafting recipies.\n\n F1=Open craft prompt. F2=Repeat last craft.'
+author = 'Sakea'
+version = '0.000000000000000003'
 forumthread = ''
 api_version = 7
 priority = 1
@@ -14,4 +14,4 @@ client_only_mod = true
 server_filter_tags = {}
 
 icon_atlas = 'atlas.xml'
-icon       = 'icon.tex'
+icon       = 'modicon.tex'

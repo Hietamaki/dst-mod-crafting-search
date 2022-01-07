@@ -58,3 +58,4 @@ Game functions can be run with adding GLOBAL. prefix to functions. Though some d
 -> Spacetus ongelma
 -> Semanttinen haku -> käytä descriptioneita apuna -> (TF-IDF haku)
 -> Custom GUI kuvakkeilla (iso)
+-> Valmiiksi rakennettua nuotiota ei voi asettaa jos resurssit uupuu uuteen

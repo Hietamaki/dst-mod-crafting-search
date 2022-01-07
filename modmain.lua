@@ -166,6 +166,7 @@ local CraftInput = Class(Screen, function(self, whisper)
 	Screen._ctor(self, "CraftInput")
 	self.whisper = whisper
 	self.runtask = nil
+	self.is_crafting_input = true
 	self:DoInit()
 end)
 
@@ -430,7 +431,12 @@ end
 local function enterKey()
 	
 	local craft_input = TheFrontEnd:GetActiveScreen()
+	if not craft_input["is_crafting_input"] then
+		return
+	end
+
 	local ci = craft_input.chat_edit.prediction_widget
+	
 	if #(ci.prediction_btns) > 0 then
 		local strItem = ci.prediction_btns[ci.active_prediction_btn].text.string
 		
@@ -451,6 +457,6 @@ end
 
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
-GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ENTER, function() enterKey() end)
+GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)

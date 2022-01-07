@@ -25,3 +25,6 @@
 - 20 zu: lowercase predictive text
 - 100 zu: choose predicted text directly
 - 200 zu: lowercase text
+- 300 zu: text can be entered also without #
+- 1 au: steam workshop release
+- 2 au: fix crash on pressing enter
