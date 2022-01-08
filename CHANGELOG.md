@@ -28,3 +28,7 @@
 - 300 zu: text can be entered also without #
 - 1 au: steam workshop release
 - 2 au: fix crash on pressing enter
+- 3 au: fix placing bufferd items
+- 4 au: reorganize tasks
+- 5 au: show with icon if invent/build
+- 6 au: last item remembered when crafted through prompt

@@ -1,7 +1,7 @@
 name = 'Type to Craft'
 description = 'Crafting search works as a finder for crafting recipies. Allows crafting without navigating menus.\n\n F1=Open craft prompt.\n F2=Repeat last craft.'
 author = 'Sakea'
-version = '0.0000000000000000031'
+version = '0.000000000000000006'
 forumthread = ''
 api_version = 8
 priority = 1

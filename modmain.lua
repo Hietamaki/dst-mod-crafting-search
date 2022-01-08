@@ -1,8 +1,9 @@
 local ICON_MODE = "󰀖" --tophat
 local ICON_ACTIVATION = "󰀓" --sanity
-local ICON_TAB = "󰀌" --hammer
-local ICON_CRAFT = "󰀏" --lightbulb
-local ICON_CANT_BUILD = "󰀒" --redgem
+local ICON_CRAFT = "󰀌" --hammer
+local ICON_INVENT = "󰀏" --lightbulb
+local ICON_RED_GEM = "󰀒" --redgem
+local ICON_CANT_BUILD = "" --redgem
 
 local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
 local KEY_RESET = GLOBAL.KEY_F5
@@ -85,12 +86,17 @@ local function craftItem(recipeName)
 		return
 	end
 
+	lastItem = item
+
+	local icon = ICON_CRAFT
+
 	local localizedRecipeName = getItemName(recipe.name)
 
 	if not builder:KnowsRecipe(recipeName) then
 		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
 			builder:CanLearn(recipe.name) then
 			builder:MakeRecipeFromMenu(recipe, nil)
+			icon = ICON_INVENT
 		else
 			sendMessage(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
         	return false
@@ -124,7 +130,7 @@ local function craftItem(recipeName)
 		return
 	end
 	
-	sendMessage(ICON_TAB.." Crafting "..localizedRecipeName, nil, true, nil, true)
+	sendMessage(icon.." Crafting "..localizedRecipeName)
 	
 	if recipe.placer == nil then
 		builder:MakeRecipeFromMenu(recipe, nil)
@@ -278,7 +284,6 @@ function CraftInput:Run()
 	item = item:match( "^#*(.-)#*$" )
 	craftItem(itemsByName[item])
 	--print(itemsByName[item])
-	lastItem = item
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then
         return

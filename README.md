@@ -23,39 +23,37 @@ Game functions can be run with adding GLOBAL. prefix to functions. Though some d
 
 
 
-- GitHubiin
-- GitHubiin issuet
-- Pilko koodi osiin
-- debugViesteihin joku parempi (ruudun laitaan)
+### Plans
+
+1. refaktoroi koodi eri komponentteihin !!
+2. set hotkey (configure modin asetutksista) !!
+3. c näppäin ->
+4. miten monta esinettä uupuu !
+5. menu/esci päällä ei voi avata findia
+6. ChatLOG pois
+
+Evaluation:
 - Nopeempi käynnistys suoraan peliin modi päällä
-*-* ESC ongelma
-- ChatLOG pois
-- korvaa " " -> _
-- Resurssit ei riitä viesti erikseen
-- Resurssit ei riitä -> kerro mitä puuttuu
-- vaihda hotkey
-- autoprompt toimiin
-- lokalisaatiolle parempi vaihtoehto?
-- semanttinen haku
-- fuzzy search
-- menu päällä -> ei toimivaksi
-- live search (kuvilla)
-- API versio uudempaan?
-- ennakkosyötössä ärsyttävä jos teksti on täysin sama kuin ehdotettu ja ei rakenna suoraan -> voisi siis lähettää tekstin heti kun painaa entteriä (valitsee ennakkosyötön)
-
-1. chess_piece > chess piece. käytännössä lokalisoidut nimet hakuun
-2. erottele resurssi ja reseptivika
-3. kerro mitä uupuu
-4. set hotkey (configure modin asetutksista)
-5. c näppäin ->
-6. esci päällä ei voi avata findia
-7. refaktoroi koodi eri komponentteihin! Onko GLOBAL pakko käyttää vai voiko importtaa?
-8. kuiskaa kaikki viestit pelaajalle pelkästään
-9. repeat previous
-10. miten monta esinettä uupuu
-
-
--> Spacetus ongelma
+14. CI/CD: debug nappi automaattisesti disabled kun publish
+- debugViesteihin joku parempi (ruudun laitaan)
+8. (Onko GLOBAL pakko käyttää vai voiko importtaa?)
+9. kuiskaa kaikki viestit pelaajalle pelkästään
 -> Semanttinen haku -> käytä descriptioneita apuna -> (TF-IDF haku)
+- fuzzy search
 -> Custom GUI kuvakkeilla (iso)
--> Valmiiksi rakennettua nuotiota ei voi asettaa jos resurssit uupuu uuteen
+- API versio uudempaan?
+- GitHubiin issuet
+
+Fixed:
+12. Valmiiksi rakennettua nuotiota ei voi asettaa jos resurssit uupuu uuteen !
+-> Spacetus ongelma
+- lokalisaatiolle parempi vaihtoehto?
+- ennakkosyötössä ärsyttävä jos teksti on täysin sama kuin ehdotettu ja ei rakenna suoraan -> voisi siis lähettää tekstin heti kun painaa entteriä (valitsee ennakkosyötön)
+1. chess_piece > chess piece. käytännössä lokalisoidut nimet hakuun
+- autoprompt toimiin
+- Resurssit ei riitä -> kerro mitä puuttuu
+2. erottele resurssi ja reseptivika
+*-* ESC ongelma
+13. Organize tasks
+10. repeat previous
+- GitHubiin
