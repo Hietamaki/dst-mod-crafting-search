@@ -49,7 +49,8 @@ local function getItemNames()
 end
 
 local function sendMessage(msg)
-	GLOBAL.ThePlayer.components.talker:Say(ICON_MODE.." "..msg)
+	--function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filter_context, original_author_netid)
+	GLOBAL.ThePlayer.components.talker:Say(msg, nil, nil, nil, nil)
 end
 
 local function isPlayerAvailable()
@@ -80,7 +81,7 @@ local function craftItem(recipeName)
 	local builder = GLOBAL.ThePlayer.replica.builder
 
 	if recipe == nil then
-		talker:Say(ICON_CANT_BUILD.." No such item.")
+		sendMessage(ICON_CANT_BUILD.." No such item.")
 		return
 	end
 
@@ -91,39 +92,39 @@ local function craftItem(recipeName)
 			builder:CanLearn(recipe.name) then
 			builder:MakeRecipeFromMenu(recipe, nil)
 		else
-			talker:Say(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
+			sendMessage(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
         	return false
 		end
 	end
 
-	if not builder:CanBuild(recipeName) then
+	if not builder:IsBuildBuffered(recipeName) and not builder:CanBuild(recipeName) then
 		for i, v in ipairs(recipe.ingredients) do
 			if not builder.inst.replica.inventory:Has(v.type, math.max(1, GLOBAL.RoundBiasedUp(v.amount * builder:IngredientMod()))) then
 				local many = ""
 				if v.amount > 1 then
 					many = v.amount.." "
 				end
-				talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
+				sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
 				return false
 			end
 		end
 		for i, v in ipairs(recipe.character_ingredients) do
 			if not builder:HasCharacterIngredient(v) then
-				talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+				sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
 				return false
             end
         end
         for i, v in ipairs(recipe.tech_ingredients) do
             if not builder:HasTechIngredient(v) then
-				talker:Say(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
+				sendMessage(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
                 return false
             end
         end
-		talker:Say(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
+		sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
 		return
 	end
 	
-	talker:Say(ICON_CRAFT.." Building "..localizedRecipeName)
+	sendMessage(ICON_TAB.." Crafting "..localizedRecipeName, nil, true, nil, true)
 	
 	if recipe.placer == nil then
 		builder:MakeRecipeFromMenu(recipe, nil)
@@ -417,7 +418,7 @@ local function startInput(key)
 		return
 	end
 	
-	--GLOBAL.ThePlayer.components.talker:Say(ICON_CRAFT.." debug")
+	--sendMessage(ICON_CRAFT.." debug")
 	TheFrontEnd:PushScreen(CraftInput(false))
 end
 
