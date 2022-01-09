@@ -13,6 +13,9 @@ local KEY_CRAFT_ALT = GLOBAL.KEY_C
 local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
 local KEY_ENTER = GLOBAL.KEY_ENTER
 
+local bind = GetModConfigData("bind")
+KEY_CRAFT_INPUT = GLOBAL[bind]
+
 local lastItem = ""
 
 function table_invert(t)
@@ -429,23 +432,30 @@ local function closePrompt()
 	end
 end
 
-local function startInput(key)
+local function craftLast()
+	
+	if lastItem ~= "" then
+		craftItem(lastItem)
+	end
+end
+
+local function startInput()
 	if not isPlayerAvailable() then
+		return
+	end
+
+	if GLOBAL.TheInput:IsKeyDown(GLOBAL.KEY_CTRL) then
+		craftLast()
 		return
 	end
 
 	local gump = TheFrontEnd:GetActiveScreen()
 
 	if gump.name == "CraftInput" then
-		closePrompt()
+		--closePrompt()
+		return false
 	elseif gump.name == "HUD" then
 		TheFrontEnd:PushScreen(CraftInput(false))
-	end
-end
-
-local function craftLast()
-	if lastItem ~= "" then
-		craftItem(lastItem)
 	end
 end
 
@@ -481,12 +491,16 @@ local function enterKey()
 end
 
 
+
 --local function reset()
 --	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
 --end
 
-GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
-GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
+GLOBAL.TheInput:AddKeyDownHandler(GLOBAL[bind], function() startInput() end)
 GLOBAL.TheInput:AddKeyUpHandler(KEY_ESCAPE, function() return closePrompt() end)
 GLOBAL.TheInput:AddKeyUpHandler(KEY_ENTER, function() enterKey() end)
 --GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
+
+if bind == "KEY_F1" then
+	GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
+end

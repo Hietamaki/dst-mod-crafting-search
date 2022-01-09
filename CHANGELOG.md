@@ -1,7 +1,8 @@
 
 # Version history
 
-- 20 au: ESC does not open menu when prompt open
+- 1000 au: configurable binding
+- 100 au: ESC does not open menu when prompt open
 - 10 au: f1 also closes prompt
 - 9 au: doesn't open with other huds open
 - 8 au: fix crash with empty strings
