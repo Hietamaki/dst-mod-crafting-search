@@ -32,3 +32,5 @@
 - 4 au: reorganize tasks
 - 5 au: show with icon if invent/build
 - 6 au: last item remembered when crafted through prompt
+- 7 au: fix texture size to power of 2
+- 10 au: f1 also closes prompt

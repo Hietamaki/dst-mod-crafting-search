@@ -86,7 +86,7 @@ local function craftItem(recipeName)
 		return
 	end
 
-	lastItem = item
+	lastItem = recipeName
 
 	local icon = ICON_CRAFT
 
@@ -278,10 +278,15 @@ function CraftInput:OnRawKey(key, down)
     return false
 end
 
+local function cleanItemName(name)
+	name = string.lower(name)
+	name = name:match( "^%s*(.-)%s*$" )
+	return name:match( "^#*(.-)#*$" )
+end
+
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
-	local item = string.lower(chat_string:match( "^%s*(.-)%s*$" ))
-	item = item:match( "^#*(.-)#*$" )
+	local item = cleanItemName(chat_string)
 	craftItem(itemsByName[item])
 	--print(itemsByName[item])
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
@@ -393,7 +398,7 @@ function CraftInput:DoInit()
 	
 	self.chat_edit.OnTextInputted = function(text, k)
 		--self.chat_edit._base.OnRawKey(text, k)
-		print(self.chat_edit:GetString())
+		--print(self.chat_edit:GetString())
 		self.chat_edit:SetString(string.lower(self.chat_edit:GetString()))
 	--	print(type(text))
 		
@@ -422,9 +427,14 @@ local function startInput(key)
 	if not isPlayerAvailable() then
 		return
 	end
-	
-	--sendMessage(ICON_CRAFT.." debug")
-	TheFrontEnd:PushScreen(CraftInput(false))
+
+	local gump = TheFrontEnd:GetActiveScreen()
+
+	if gump.name == "CraftInput" then
+		closePrompt()
+	elseif gump.name == "HUD" then
+		TheFrontEnd:PushScreen(CraftInput(false))
+	end
 end
 
 local function craftLast()
@@ -437,14 +447,22 @@ end
 local function enterKey()
 	
 	local craft_input = TheFrontEnd:GetActiveScreen()
-	if not craft_input["is_crafting_input"] then
+	if craft_input.name ~= "CraftInput" then
 		return
 	end
 
-	local ci = craft_input.chat_edit.prediction_widget
+	if cleanItemName(craft_input.chat_edit:GetString()) == "" then
+		closePrompt()
+		return
+	end
+
+	--print(craft_input.chat_edit.string)
 	
-	if #(ci.prediction_btns) > 0 then
-		local strItem = ci.prediction_btns[ci.active_prediction_btn].text.string
+	local pred_widget = craft_input.chat_edit.prediction_widget
+	
+	if #(pred_widget.prediction_btns) > 0 then
+	--if pred_widget["prediction_btns"] then
+		local strItem = pred_widget.prediction_btns[pred_widget.active_prediction_btn].text.string
 		
 		-- Remove #
 		strItem = strItem:match( "^#*(.-)#*$" )
@@ -457,12 +475,12 @@ local function enterKey()
 end
 
 
-local function reset()
-	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
-end
+--local function reset()
+--	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
+--end
 
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_ENTER, function() enterKey() end)
-GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
+--GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
