@@ -268,15 +268,16 @@ function CraftInput:OnControl(control, down)
 	end
 end
 
-function CraftInput:OnRawKey(key, down)
-	sendMessage("Hmm")
-    if self.runtask ~= nil then return true end
-    if CraftInput._base.OnRawKey(self, key, down) then
-        return true
-    end
-
-    return false
-end
+--function CraftInput:OnRawKey(key, down)
+--    if self.runtask ~= nil then return true end
+--    if CraftInput._base.OnRawKey(self, key, down) then
+--		sendMessage("Hmm true")
+--        return true
+--    end
+--	sendMessage("Hmm false")
+--
+--    return false
+--end
 
 local function cleanItemName(name)
 	name = string.lower(name)
@@ -420,7 +421,12 @@ end
 
 
 local function closePrompt()
-	CraftInput:Close()
+	local gump = TheFrontEnd:GetActiveScreen()
+
+	if gump.name == "CraftInput" then
+		TheFrontEnd:PopScreen(gump)
+		return true
+	end
 end
 
 local function startInput(key)
@@ -481,6 +487,6 @@ end
 
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_INPUT, function() startInput(KEY_F1) end)
 GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)
-GLOBAL.TheInput:AddKeyDownHandler(KEY_ESCAPE, function() closePrompt() end)
-GLOBAL.TheInput:AddKeyDownHandler(KEY_ENTER, function() enterKey() end)
+GLOBAL.TheInput:AddKeyUpHandler(KEY_ESCAPE, function() return closePrompt() end)
+GLOBAL.TheInput:AddKeyUpHandler(KEY_ENTER, function() enterKey() end)
 --GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)

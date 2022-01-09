@@ -1,36 +1,40 @@
+
 # Version history
 
-- 1 qu: unbundle scripts.zip
-- 10 qu: change willow text to test modding
-- 100 qu: research reference mods
-- 200 qu: research basic modding info
-- 1 ru: copy paste mod as basis
-- 2 ru: craft spear on command
-- 10 ru: use command to create specific item
-- 100 ru: show craft input with hotkey
-- 1 yu: release on github
-- 2 yu: fix esc issue
-- 3 yu: add readme
-- 4 yu: inform when searched item not found
-- 10 yu: predictive text
-- 20 yu: inform if recipe not known
-- 100 yu: inform missing ingredients
-- 200 yu: add changelog
-- 300 yu: repeat last recipe F1
-- 400 yu: debug command: reboot F5
-- 500 yu: inform how many missing ingredients required
-- 600 yu: fix missing recipes
-- 1 zu: prototype missing recipe
-- 10 zu: search uses real item names
-- 20 zu: lowercase predictive text
-- 100 zu: choose predicted text directly
-- 200 zu: lowercase text
-- 300 zu: text can be entered also without #
-- 1 au: steam workshop release
-- 2 au: fix crash on pressing enter
-- 3 au: fix placing bufferd items
-- 4 au: reorganize tasks
-- 5 au: show with icon if invent/build
-- 6 au: last item remembered when crafted through prompt
-- 7 au: fix texture size to power of 2
+- 20 au: ESC does not open menu when prompt open
 - 10 au: f1 also closes prompt
+- 9 au: doesn't open with other huds open
+- 8 au: fix crash with empty strings
+- 7 au: fix texture size to power of 2
+- 6 au: last item remembered when crafted through prompt
+- 5 au: show with icon if invent/build
+- 4 au: reorganize tasks
+- 3 au: fix placing bufferd items
+- 2 au: fix crash on pressing enter
+- 1 au: steam workshop release
+- 300 zu: text can be entered also without #
+- 200 zu: lowercase text
+- 100 zu: choose predicted text directly
+- 20 zu: lowercase predictive text
+- 10 zu: search uses real item names
+- 1 zu: prototype missing recipe
+- 600 yu: fix missing recipes
+- 500 yu: inform how many missing ingredients required
+- 400 yu: debug command: reboot F5
+- 300 yu: repeat last recipe F1
+- 200 yu: add changelog
+- 100 yu: inform missing ingredients
+- 20 yu: inform if recipe not known
+- 10 yu: predictive text
+- 4 yu: inform when searched item not found
+- 3 yu: add readme
+- 2 yu: fix esc issue
+- 1 yu: release on github
+- 100 ru: show craft input with hotkey
+- 10 ru: use command to create specific item
+- 2 ru: craft spear on command
+- 1 ru: copy paste mod as basis
+- 200 qu: research basic modding info
+- 100 qu: research reference mods
+- 10 qu: change willow text to test modding
+- 1 qu: unbundle scripts.zip
