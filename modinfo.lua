@@ -1,7 +1,7 @@
 name = 'Type to Craft'
-description = 'You can search and craft items with typing the recipe\'s name using only your keyboard. Allows building items without navigating menus. \n\n Default bindings:\nC = Open craft prompt.\n Ctrl+C = Repeat last craft.'
+description = 'You can search and craft items with typing the recipe\'s name using only your keyboard. Allows building items without navigating menus. \n\n Default bindings:\nC = Open craft prompt.\n Shift+C = Repeat last craft.'
 author = 'Sakea'
-version = '0.000000000000001'
+version = '0.000000000000002'
 forumthread = ''
 
 api_version = 10
@@ -24,16 +24,29 @@ configuration_options =
 {
   {
     name = "bind",
-    label = "Bind button to open crafting input",
-    hover = "Configure which item types should be saved.",
+    label = "Open crafting input",
+    hover = "Bind button to open crafting input",
 
     options = {
-      { description = "C (Ctrl+C repeats)", data = "KEY_C" },
-      { description = "F (Ctrl+F repeats)", data = "KEY_F" },
-      { description = "X (Ctrl+X repeats)", data = "KEY_X" },
+      { description = "C", data = "KEY_C" },
+      { description = "F", data = "KEY_F" },
+      { description = "X", data = "KEY_X" },
       { description = "F1 (F2 repeats)", data = "KEY_F1" },
     },
 
     default = "KEY_C"
+  },
+  {
+    name = "modifier",
+    label = "Repeat last crafting",
+    hover = "Bind which modifier + Craft button repeats last crafting. ",
+
+    options = {
+      { description = "Alt", data = "KEY_ALT" },
+      { description = "Shift", data = "KEY_SHIFT" },
+      { description = "Ctrl", data = "KEY_CTRL"},
+    },
+
+    default = "KEY_SHIFT"
   },
 }

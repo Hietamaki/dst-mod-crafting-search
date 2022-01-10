@@ -1,7 +1,9 @@
 
 # Version history
 
-- 1000 au: configurable binding
+- 10 fu: refactor: split code
+- 2 fu: custom modifier
+- 1 fu: configurable binding
 - 100 au: ESC does not open menu when prompt open
 - 10 au: f1 also closes prompt
 - 9 au: doesn't open with other huds open
