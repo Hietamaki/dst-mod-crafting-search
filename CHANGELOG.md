@@ -1,6 +1,7 @@
 
 # Version history
 
+- 11 fu: refactor: add helper module
 - 10 fu: refactor: split code
 - 2 fu: custom modifier
 - 1 fu: configurable binding

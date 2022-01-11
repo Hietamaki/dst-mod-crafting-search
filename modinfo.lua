@@ -1,7 +1,7 @@
 name = 'Type to Craft'
 description = 'You can search and craft items with typing the recipe\'s name using only your keyboard. Allows building items without navigating menus. \n\n Default bindings:\nC = Open craft prompt.\n Shift+C = Repeat last craft.'
 author = 'Sakea'
-version = '0.000000000000002'
+version = '0.000000000000011'
 forumthread = ''
 
 api_version = 10
@@ -30,6 +30,7 @@ configuration_options =
     options = {
       { description = "C", data = "KEY_C" },
       { description = "F", data = "KEY_F" },
+      { description = "R", data = "KEY_R" },
       { description = "X", data = "KEY_X" },
       { description = "F1 (F2 repeats)", data = "KEY_F1" },
     },
@@ -42,9 +43,9 @@ configuration_options =
     hover = "Bind which modifier + Craft button repeats last crafting. ",
 
     options = {
-      { description = "Alt", data = "KEY_ALT" },
       { description = "Shift", data = "KEY_SHIFT" },
       { description = "Ctrl", data = "KEY_CTRL"},
+      { description = "Alt", data = "KEY_ALT" },
     },
 
     default = "KEY_SHIFT"

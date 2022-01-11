@@ -1,42 +1,8 @@
-itemsByID={}
-itemsByName = {}
-
-local function cleanItemName(name)
-	name = string.lower(name)
-	name = name:match( "^%s*(.-)%s*$" )
-	return name:match( "^#*(.-)#*$" )
-end
-
-function sendMessage(msg)
-	--function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filter_context, original_author_netid)
-	GLOBAL.ThePlayer.components.talker:Say(msg, nil, nil, nil, nil)
-end
-
-function getItemName(recipeName)
-	return GLOBAL.STRINGS.NAMES[string.upper(recipeName)]
-end
- 
-local function getItemNames()
-	local builder = GLOBAL.ThePlayer.replica.builder
-
-	local n=0
-	
-	for k,v in pairs(GLOBAL.AllRecipes) do
-		local recipe = GLOBAL.GetValidRecipe(k)
-		name = getItemName(k)
-		if name ~= nil and recipe ~= nil then
-			--if builder:KnowsRecipe(k) or GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) then
-				n=n+1
-				itemsByID[n]=string.lower(name)
-				itemsByName[string.lower(name)] = k
-			--end
-		end
-	end
-
-	return itemsByID
-end
-
+local Helper = require "helper"
 local CraftInput = require "craftscreen"
+
+Helper = Helper:new(GLOBAL)
+
 
 local ICON_MODE = "󰀖" --tophat
 local ICON_ACTIVATION = "󰀓" --sanity
@@ -58,13 +24,7 @@ local binded_modifier = GetModConfigData("modifier")
 KEY_CRAFT_INPUT = GLOBAL[bind]
 
 local lastItem = ""
-
-
-local function getItemName(recipeName)
-	return GLOBAL.STRINGS.NAMES[string.upper(recipeName)]
-end
  
-
 local function isPlayerAvailable()
 	local DST = GLOBAL.TheSim:GetGameID() == "DST"
 	return DST and GLOBAL.ThePlayer ~= nil
@@ -94,7 +54,7 @@ local function craftItem(recipeName)
 	local builder = GLOBAL.ThePlayer.replica.builder
 
 	if recipe == nil then
-		sendMessage(ICON_CANT_BUILD.." No such item.")
+		Helper:sendMessage(ICON_CANT_BUILD.." No such item.")
 		return
 	end
 
@@ -102,14 +62,14 @@ local function craftItem(recipeName)
 
 	local icon = ICON_CRAFT
 
-	local localizedRecipeName = getItemName(recipe.name)
+	local localizedRecipeName = Helper:getItemName(recipe.name)
 
 	if not builder:KnowsRecipe(recipeName) then
 		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
 			builder:CanLearn(recipe.name) then
 			icon = ICON_INVENT
 		else
-			sendMessage(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
+			Helper:sendMessage(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
         	return false
 		end
 	end
@@ -121,27 +81,27 @@ local function craftItem(recipeName)
 				if v.amount > 1 then
 					many = v.amount.." "
 				end
-				sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
+				Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
 				return false
 			end
 		end
 		for i, v in ipairs(recipe.character_ingredients) do
 			if not builder:HasCharacterIngredient(v) then
-				sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+				Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
 				return false
             end
         end
         for i, v in ipairs(recipe.tech_ingredients) do
             if not builder:HasTechIngredient(v) then
-				sendMessage(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
+				Helper:sendMessage(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
                 return false
             end
         end
-		sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
+		Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
 		return
 	end
 	
-	sendMessage(icon.." Crafting "..localizedRecipeName)
+	Helper:sendMessage(icon.." Crafting "..localizedRecipeName)
 	
 	if recipe.placer == nil then
 		builder:MakeRecipeFromMenu(recipe, nil)
@@ -207,14 +167,14 @@ end
 
 local function enterKey()
 	
-	getItemNames()
+	Helper:getItemNames()
 	
 	local craft_input = TheFrontEnd:GetActiveScreen()
 	if craft_input.name ~= "CraftInput" then
 		return
 	end
 
-	if cleanItemName(craft_input.chat_edit:GetString()) == "" then
+	if Helper:cleanItemName(craft_input.chat_edit:GetString()) == "" then
 		closePrompt()
 		return
 	end
@@ -229,8 +189,11 @@ local function enterKey()
 		
 		-- Remove #
 		strItem = strItem:match( "^#*(.-)#*$" )
-		--sendMessage("Hmm.. "..strItem)
-		craftItem(itemsByName[strItem])
+		--Helper:sendMessage("Hmm.. "..strItem)
+		print("strItem")
+		print(strItem)
+		print(Helper.itemsByName[strItem])
+		craftItem(Helper.itemsByName[strItem])
 		closePrompt()
 		return
 	end
