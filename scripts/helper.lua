@@ -2,8 +2,8 @@
 local Helper = {}
 
 function Helper:new(global)
-    self.itemsByID={}
-    self.itemsByName = {}
+    self.readableItemNames={}
+    self.rawItemNames = {}
     self._G = global
 
     return self
@@ -21,10 +21,18 @@ function Helper:sendMessage(msg)
 	self._G.ThePlayer.components.talker:Say(msg, nil, nil, nil, nil)
 end
 
-function Helper:getItemName(recipeName)
+function Helper:getRawItemName(readableName)
+    return self.rawItemNames[readableName]
+end
+
+function Helper:getReadableItemName(recipeName)
 	return self._G.STRINGS.NAMES[string.upper(recipeName)]
 end
- 
+
+function Helper:listReadableItemNames()
+    return self.readableItemNames
+end
+
 function Helper:getItemNames()
 	local builder = self._G.ThePlayer.replica.builder
 
@@ -32,17 +40,18 @@ function Helper:getItemNames()
 	
 	for k,v in pairs(self._G.AllRecipes) do
 		local recipe = self._G.GetValidRecipe(k)
-		local name = self:getItemName(k)
-		if name ~= nil and recipe ~= nil then
+		local readableName = self:getReadableItemName(k)
+		if readableName ~= nil and recipe ~= nil then
 			--if builder:KnowsRecipe(k) or self._G.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) then
 				n=n+1
-				self.itemsByID[n]=string.lower(name)
-				self.itemsByName[string.lower(name)] = k
+				self.readableItemNames[n]=string.lower(readableName)
+				self.rawItemNames[string.lower(readableName)] = k
 			--end
 		end
 	end
 
-	return self.itemsByID
+	return self.readableItemNames
 end
+
 
 return Helper

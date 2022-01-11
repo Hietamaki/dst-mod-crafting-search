@@ -132,11 +132,7 @@ function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
 	local item = Helper:cleanItemName(chat_string)
 	Helper:getItemNames()
-    print("item")
-    print(item)
-    print(Helper.itemsByName[item])
-	self.craftItem(Helper.itemsByName[item])
-	--print(Helper.itemsByName[item])
+	self.craftItem(Helper:getRawItemName(item))
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then
         return
@@ -231,7 +227,7 @@ function CraftInput:DoInit()
 
 	
 	local data = {
-		words = Helper.itemsByID,
+		words = Helper:listReadableItemNames(),
 		delim = "#",
 	}
 

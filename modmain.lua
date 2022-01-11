@@ -15,7 +15,6 @@ local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
 local KEY_RESET = GLOBAL.KEY_F5
 local KEY_CRAFT_INPUT = GLOBAL.KEY_F1
 local KEY_CRAFT_LAST = GLOBAL.KEY_F2
-local KEY_CRAFT_ALT = GLOBAL.KEY_C
 local KEY_ESCAPE = GLOBAL.KEY_ESCAPE
 local KEY_ENTER = GLOBAL.KEY_ENTER
 
@@ -43,7 +42,7 @@ local function isInputLocked()
 end
 
 local function craftItem(recipeName)
-	print(recipeName)
+	
 	if not isPlayerAvailable() then
 		return
 	end
@@ -62,7 +61,7 @@ local function craftItem(recipeName)
 
 	local icon = ICON_CRAFT
 
-	local localizedRecipeName = Helper:getItemName(recipe.name)
+	local localizedRecipeName = Helper:getReadableItemName(recipe.name)
 
 	if not builder:KnowsRecipe(recipeName) then
 		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
@@ -125,9 +124,6 @@ GLOBAL.AddModUserCommand("oma", "craft", {
 	end
 })	
 
-
-
-
 local function closePrompt()
 	local gump = TheFrontEnd:GetActiveScreen()
 
@@ -189,18 +185,12 @@ local function enterKey()
 		
 		-- Remove #
 		strItem = strItem:match( "^#*(.-)#*$" )
-		--Helper:sendMessage("Hmm.. "..strItem)
-		print("strItem")
-		print(strItem)
-		print(Helper.itemsByName[strItem])
-		craftItem(Helper.itemsByName[strItem])
+		craftItem(Helper:getRawItemName(strItem))
 		closePrompt()
 		return
 	end
 
 end
-
-
 
 --local function reset()
 --	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
