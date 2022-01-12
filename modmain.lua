@@ -29,18 +29,6 @@ local function isPlayerAvailable()
 	return DST and GLOBAL.ThePlayer ~= nil
 end
 
-local function isInputLocked()
-	if not isPlayerAvailable() then
-		return true
-	end
-	
-	if GLOBAL.ThePlayer.HUD == nil then
-		return true
-	end
-	
-	return GLOBAL.ThePlayer.HUD:IsCraftInputOpen() or GLOBAL.ThePlayer.HUD:IsConsoleScreenOpen()
-end
-
 local function craftItem(recipeName)
 	
 	if not isPlayerAvailable() then
@@ -112,18 +100,6 @@ local function craftItem(recipeName)
 	end
 end
 
-GLOBAL.AddModUserCommand("oma", "craft", {
-	aliases = {"c"},
-	permission = GLOBAL.COMMAND_PERMISSION.USER,
-	slash = false,
-	desc = "Craft items with /c <item name>!",
-	params = {"n"},
-	paramsoptional = {false},
-	localfn = function(params, caller)
-		craftItem(params.n)
-	end
-})	
-
 local function closePrompt()
 	local gump = TheFrontEnd:GetActiveScreen()
 
@@ -153,9 +129,10 @@ local function startInput()
 	local gump = TheFrontEnd:GetActiveScreen()
 
 	if gump.name == "CraftInput" then
-		--closePrompt()
+		--pass through - we are in middle of input
 		return false
 	elseif gump.name == "HUD" then
+		-- no menus open
 		TheFrontEnd:PushScreen(CraftInput(GLOBAL, craftItem))
 	end
 end
@@ -172,13 +149,10 @@ local function enterKey()
 		closePrompt()
 		return
 	end
-
-	--print(craft_input.chat_edit.string)
 	
 	local pred_widget = craft_input.chat_edit.prediction_widget
 	
 	if #(pred_widget.prediction_btns) > 0 then
-	--if pred_widget["prediction_btns"] then
 		local strItem = pred_widget.prediction_btns[pred_widget.active_prediction_btn].text.string
 		
 		-- Remove #
@@ -190,14 +164,9 @@ local function enterKey()
 
 end
 
---local function reset()
---	GLOBAL.TheNet:SendWorldRollbackRequestToServer(0)
---end
-
 GLOBAL.TheInput:AddKeyDownHandler(GLOBAL[bind], function() startInput() end)
 GLOBAL.TheInput:AddKeyUpHandler(KEY_ESCAPE, function() return closePrompt() end)
 GLOBAL.TheInput:AddKeyUpHandler(KEY_ENTER, function() enterKey() end)
---GLOBAL.TheInput:AddKeyDownHandler(KEY_RESET, function() reset() end)
 
 if bind == "KEY_F1" then
 	GLOBAL.TheInput:AddKeyDownHandler(KEY_CRAFT_LAST, function() craftLast() end)

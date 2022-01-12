@@ -1,6 +1,7 @@
 
 # Version history
 
+- 12 fu: refactor: generate itemlists on demand
 - 11 fu: refactor: add helper module
 - 10 fu: refactor: split code
 - 2 fu: custom modifier

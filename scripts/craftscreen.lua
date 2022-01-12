@@ -20,7 +20,7 @@ local CraftInput = Class(Screen, function(self, glob, craft_fn)
 	self.runtask = nil
 	self.is_crafting_input = true
 	Helper = Helper:new(self._G)
-	
+
 	self:DoInit()
 end)
 
@@ -50,82 +50,7 @@ function CraftInput:OnBecomeInactive()
     if self._G.ThePlayer ~= nil and self._G.ThePlayer.HUD ~= nil then
         self._G.ThePlayer.HUD.controls.networkchatqueue:Show()
     end
-
-	---self:Close()
-	--Helper:sendMessage("onBecomeInactive")
 end
-
-function CraftInput:GetHelpText()
-    local controller_id = self._G.TheInput:GetControllerID()
-    local t = {}
-
-    table.insert(t,  self._G.TheInput:GetLocalizedControl(controller_id, CONTROL_CANCEL) .. " " .. STRINGS.UI.HELP.BACK)
-
-	table.insert(t,  self._G.TheInput:GetLocalizedControl(controller_id, CONTROL_MENU_MISC_2) .. " " .. STRINGS.UI.CraftInput.HELP_WHISPER)
-	table.insert(t,  self._G.TheInput:GetLocalizedControl(controller_id, CONTROL_ACCEPT) .. " " .. STRINGS.UI.CraftInput.HELP_SAY)
-
-    return table.concat(t, "  ")
-end
-
-function CraftInput:OnControl(control, down)
-    if self.runtask ~= nil or CraftInput._base.OnControl(self, control, down) then return true end
-
-    if self.networkchatqueue:OnChatControl(control, down) then return true end
-
-    --jcheng: don't allow debug menu stuff going on right now
-    if control == CONTROL_OPEN_DEBUG_CONSOLE then
-        return true
-    end
-
-	if not down and (control == CONTROL_CANCEL) then
-		Helper:sendMessage("CONTROL_CANCEL")
-		self:Close()
-		return true
-	end
-
-    -- For controllers, the misc_2 button will whisper if in say mode or say if in whisper mode. This is to allow the player to only bind one key to initiate chat mode.
-	if not self._G.TheInput:PlatformUsesVirtualKeyboard() then
-		if self._G.TheInput:ControllerAttached() then
-			if not down and control == CONTROL_MENU_MISC_2 then
-				self.whisper = not self.whisper
-				self:OnTextEntered()
-				return true
-			end
-
-			if not down and (control == CONTROL_TOGGLE_SAY or control == CONTROL_TOGGLE_WHISPER) then
-				self:Close()
-				return true
-			end
-		end
-	else -- has virtual keyboard
-		if not down then
-			if control == CONTROL_MENU_MISC_2 then
-				self.whisper = true
-				self.chat_edit:SetEditing(true)
-				return true
-			elseif control == CONTROL_ACCEPT then
-				self.whisper = false
-				self.chat_edit:SetEditing(true)
-				return true
-			elseif control == CONTROL_CANCEL then
-		      self:Close()
-			  return true
-		end
-	end
-	end
-end
-
---function CraftInput:OnRawKey(key, down)
---    if self.runtask ~= nil then return true end
---    if CraftInput._base.OnRawKey(self, key, down) then
---		Helper:sendMessage("Hmm true")
---        return true
---    end
---	Helper:sendMessage("Hmm false")
---
---    return false
---end
-
 
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
@@ -139,7 +64,6 @@ function CraftInput:Run()
 end
 
 function CraftInput:Close()
-    --SetPause(false)
     self._G.TheInput:EnableDebugToggle(true)
     TheFrontEnd:PopScreen(self)
 end
@@ -151,7 +75,6 @@ local function DoRun(inst, self)
 end
 
 function CraftInput:OnTextEntered()
-	--self.chat_edit:SetString(string.lower(self.chat_edit.string))
     if self.runtask ~= nil then
         self.runtask:Cancel()
     end
@@ -159,7 +82,6 @@ function CraftInput:OnTextEntered()
 end
 
 function CraftInput:DoInit()
-    --SetPause(true,"console")
     self._G.TheInput:EnableDebugToggle(false)
 
     local label_height = 50
@@ -222,7 +144,6 @@ function CraftInput:DoInit()
     self.networkchatqueue = self.chat_queue_root:AddChild(ScrollableChatQueue())
 
     self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
-    --self.chat_edit:AddWordPredictionDictionary(Emoji.GetWordPredictionDictionary())
 
 	
 	local data = {
@@ -230,12 +151,8 @@ function CraftInput:DoInit()
 		delim = "#",
 	}
 
-	--Helper:sendMessage("Words "..#(data.words).." / ")
-
 	--data.GetDisplayString = function(word) return word end
-
 	self.chat_edit:AddWordPredictionDictionary(data)
-
     self.chat_edit:SetString("#")
 
 	
