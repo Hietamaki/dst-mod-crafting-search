@@ -34,9 +34,6 @@ function CraftInput:OnBecomeActive()
 		TheFrontEnd:LockFocus(true)
 	end
 
-    if self._G.ThePlayer ~= nil and self._G.ThePlayer.HUD ~= nil then
-        self._G.ThePlayer.HUD.controls.networkchatqueue:Hide()
-    end
 end
 
 function CraftInput:OnBecomeInactive()
@@ -45,10 +42,6 @@ function CraftInput:OnBecomeInactive()
     if self.runtask ~= nil then
         self.runtask:Cancel()
         self.runtask = nil
-    end
-
-    if self._G.ThePlayer ~= nil and self._G.ThePlayer.HUD ~= nil then
-        self._G.ThePlayer.HUD.controls.networkchatqueue:Show()
     end
 end
 
@@ -135,44 +128,21 @@ function CraftInput:DoInit()
 	self.chat_edit:SetForceEdit(true)
     self.chat_edit.OnStopForceEdit = function() self:Close() end
 
-    self.chat_queue_root = self.chat_edit:AddChild(Widget("chat_queue_root"))
-    self.chat_queue_root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
-    self.chat_queue_root:SetHAnchor(self._G.ANCHOR_MIDDLE)
-    self.chat_queue_root:SetVAnchor(self._G.ANCHOR_BOTTOM)
-    self.chat_queue_root = self.chat_queue_root:AddChild(Widget(""))
-    self.chat_queue_root:SetPosition(-90,765,0)
-    self.networkchatqueue = self.chat_queue_root:AddChild(ScrollableChatQueue())
-
     self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
 
 	
 	local data = {
 		words = Helper:listReadableItemNames(),
 		delim = "#",
+		--GetDisplayString = function(word) return word end
 	}
 
-	--data.GetDisplayString = function(word) return word end
 	self.chat_edit:AddWordPredictionDictionary(data)
     self.chat_edit:SetString("#")
 
 	
 	self.chat_edit.OnTextInputted = function(text, k)
-		--self.chat_edit._base.OnRawKey(text, k)
-		--print(self.chat_edit:GetString())
 		self.chat_edit:SetString(string.lower(self.chat_edit:GetString()))
-	--	print(type(text))
-		
-		--self.chat_edit:SetString(string.lower(self.chat_edit.string))
-		-- convert upper to lower
-		--if key > 64 and key < 91 then
-		--	key = key + 32
-		--	Helper:sendMessage("Hmm "..key)
-		--end
-		--if self.runtask ~= nil then return true end
-		--if ci._base.OnRawKey(self, key, down) then
-		--    return true
-		--end
-
 		return false
 	end
 end
