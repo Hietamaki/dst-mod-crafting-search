@@ -3,13 +3,9 @@ local CraftInput = require "craftscreen"
 
 Helper = Helper:new(GLOBAL)
 
-
-local ICON_MODE = "󰀖" --tophat
-local ICON_ACTIVATION = "󰀓" --sanity
 local ICON_CRAFT = "󰀌" --hammer
 local ICON_INVENT = "󰀏" --lightbulb
-local ICON_RED_GEM = "󰀒" --redgem
-local ICON_CANT_BUILD = "" --redgem
+local ICON_CANT_CRAFT = ""
 
 local KEY_DEBUG = GLOBAL.KEY_BACKSLASH
 local KEY_RESET = GLOBAL.KEY_F5
@@ -41,7 +37,7 @@ local function craftItem(recipeName)
 	local builder = GLOBAL.ThePlayer.replica.builder
 
 	if recipe == nil then
-		Helper:sendMessage(ICON_CANT_BUILD.." No such item.")
+		Helper:sendMessage(ICON_CANT_CRAFT.." No such item.")
 		return
 	end
 
@@ -56,7 +52,7 @@ local function craftItem(recipeName)
 			builder:CanLearn(recipe.name) then
 			icon = ICON_INVENT
 		else
-			Helper:sendMessage(ICON_CANT_BUILD.." I don't know the recipe for "..localizedRecipeName..".")
+			Helper:sendMessage(ICON_CANT_CRAFT.." I don't know the recipe for "..localizedRecipeName..".")
         	return false
 		end
 	end
@@ -68,23 +64,23 @@ local function craftItem(recipeName)
 				if v.amount > 1 then
 					many = v.amount.." "
 				end
-				Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have "..many..v.type)
+				Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? I don't have "..many..v.type)
 				return false
 			end
 		end
 		for i, v in ipairs(recipe.character_ingredients) do
 			if not builder:HasCharacterIngredient(v) then
-				Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? I don't have ".. v.type)
+				Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? I don't have ".. v.type)
 				return false
             end
         end
         for i, v in ipairs(recipe.tech_ingredients) do
             if not builder:HasTechIngredient(v) then
-				Helper:sendMessage(ICON_CANT_BUILD.." No tech ingredient for "..localizedRecipeName..".")
+				Helper:sendMessage(ICON_CANT_CRAFT.." No tech ingredient for "..localizedRecipeName..".")
                 return false
             end
         end
-		Helper:sendMessage(ICON_CANT_BUILD.." "..localizedRecipeName.."? Something wrong.")
+		Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? Something wrong.")
 		return
 	end
 	
@@ -101,10 +97,10 @@ local function craftItem(recipeName)
 end
 
 local function closePrompt()
-	local gump = TheFrontEnd:GetActiveScreen()
+	local activeScreen = TheFrontEnd:GetActiveScreen()
 
-	if gump.name == "CraftInput" then
-		TheFrontEnd:PopScreen(gump)
+	if activeScreen.name == "CraftInput" then
+		activeScreen:Close()
 		return true
 	end
 end
@@ -126,42 +122,35 @@ local function startInput()
 		return
 	end
 
-	local gump = TheFrontEnd:GetActiveScreen()
+	local activeScreen = TheFrontEnd:GetActiveScreen()
 
-	if gump.name == "CraftInput" then
+	if activeScreen.name == "CraftInput" then
 		--pass through - we are in middle of input
 		return false
-	elseif gump.name == "HUD" then
+	elseif activeScreen.name == "HUD" then
 		-- no menus open
 		TheFrontEnd:PushScreen(CraftInput(GLOBAL, craftItem))
 	end
 end
 
-
 local function enterKey()
 	
-	local craft_input = TheFrontEnd:GetActiveScreen()
-	if craft_input.name ~= "CraftInput" then
-		return
-	end
-
-	if Helper:cleanItemName(craft_input.chat_edit:GetString()) == "" then
-		closePrompt()
+	local activeScreen = TheFrontEnd:GetActiveScreen()
+	
+	if activeScreen.name ~= "CraftInput" then
 		return
 	end
 	
-	local pred_widget = craft_input.chat_edit.prediction_widget
-	
-	if #(pred_widget.prediction_btns) > 0 then
-		local strItem = pred_widget.prediction_btns[pred_widget.active_prediction_btn].text.string
-		
-		-- Remove #
-		strItem = strItem:match( "^#*(.-)#*$" )
-		craftItem(Helper:getRawItemName(strItem))
-		closePrompt()
+	if Helper:cleanItemName(activeScreen.chat_edit:GetString()) == "" then
+		activeScreen:Close()
 		return
 	end
-
+	
+	item = activeScreen:GetSelectedItem()
+	if item then
+		activeScreen:Close()
+		craftItem(item)
+	end
 end
 
 GLOBAL.TheInput:AddKeyDownHandler(GLOBAL[bind], function() startInput() end)

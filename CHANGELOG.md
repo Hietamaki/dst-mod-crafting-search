@@ -1,6 +1,9 @@
 
 # Version history
 
+- 15 fu: refactor: renaming and moving
+- 14 fu: refactor: remove chat log
+- 13 fu: refactor: rm unused code
 - 12 fu: refactor: generate itemlists on demand
 - 11 fu: refactor: add helper module
 - 10 fu: refactor: split code

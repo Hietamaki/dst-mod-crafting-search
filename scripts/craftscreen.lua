@@ -147,5 +147,17 @@ function CraftInput:DoInit()
 	end
 end
 
+function CraftInput:GetSelectedItem()
+	local pred_widget = self.chat_edit.prediction_widget
+
+	if #(pred_widget.prediction_btns) > 0 then
+		local strItem = pred_widget.prediction_btns[pred_widget.active_prediction_btn].text.string
+		
+		-- Remove #
+		strItem = strItem:match( "^#*(.-)#*$" )
+		return Helper:getRawItemName(strItem)
+	end
+end
+
 
 return CraftInput

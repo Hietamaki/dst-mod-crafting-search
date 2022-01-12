@@ -23,7 +23,6 @@ end
 
 function Helper:getRawItemName(readableName)
 
-    print(#(self.rawItemNames))
     if #(self.rawItemNames) == 0 then
         self.generateItemNames()
     end

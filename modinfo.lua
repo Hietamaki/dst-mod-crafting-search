@@ -1,7 +1,7 @@
 name = 'Type to Craft'
 description = 'You can search and craft items with typing the recipe\'s name using only your keyboard. Allows building items without navigating menus. \n\n Default bindings:\nC = Open craft prompt.\n Shift+C = Repeat last craft.'
 author = 'Sakea'
-version = '0.000000000000011'
+version = '0.000000000000015'
 forumthread = ''
 
 api_version = 10
