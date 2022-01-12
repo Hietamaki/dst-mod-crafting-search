@@ -16,12 +16,11 @@ local Helper = require "helper"
 local CraftInput = Class(Screen, function(self, glob, craft_fn)
 	Screen._ctor(self, "CraftInput")
 	self._G = glob
-	Helper = Helper:new(self._G)
     self.craftItem = craft_fn
-
-    Helper:getItemNames()
 	self.runtask = nil
 	self.is_crafting_input = true
+	Helper = Helper:new(self._G)
+	
 	self:DoInit()
 end)
 
@@ -131,7 +130,7 @@ end
 function CraftInput:Run()
     local chat_string = self.chat_edit:GetString()
 	local item = Helper:cleanItemName(chat_string)
-	Helper:getItemNames()
+	
 	self.craftItem(Helper:getRawItemName(item))
     chat_string = chat_string ~= nil and chat_string:match("^%s*(.-%S)%s*$") or ""
     if chat_string == "" then

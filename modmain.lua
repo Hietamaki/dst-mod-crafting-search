@@ -163,8 +163,6 @@ end
 
 local function enterKey()
 	
-	Helper:getItemNames()
-	
 	local craft_input = TheFrontEnd:GetActiveScreen()
 	if craft_input.name ~= "CraftInput" then
 		return

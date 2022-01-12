@@ -22,6 +22,12 @@ function Helper:sendMessage(msg)
 end
 
 function Helper:getRawItemName(readableName)
+
+    print(#(self.rawItemNames))
+    if #(self.rawItemNames) == 0 then
+        self.generateItemNames()
+    end
+
     return self.rawItemNames[readableName]
 end
 
@@ -30,10 +36,18 @@ function Helper:getReadableItemName(recipeName)
 end
 
 function Helper:listReadableItemNames()
+    if #(self.rawItemNames) == 0 then
+        self:generateItemNames()
+    end
+    
     return self.readableItemNames
 end
 
-function Helper:getItemNames()
+function Helper:generateItemNames()
+    if self == nil then
+        return
+    end
+
 	local builder = self._G.ThePlayer.replica.builder
 
 	local n=0
