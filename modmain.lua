@@ -87,7 +87,7 @@ local function craftItem(recipeName)
 	Helper:sendMessage(icon.." Crafting "..localizedRecipeName)
 	
 	if recipe.placer == nil then
-		builder:MakeRecipeFromMenu(recipe, nil)
+		builder:MakeRecipeFromMenu(recipe, GLOBAL.Profile:GetLastUsedSkinForItem(recipeName))
 	else
 		if not builder:IsBuildBuffered(recipeName) then
 			builder:BufferBuild(recipeName)

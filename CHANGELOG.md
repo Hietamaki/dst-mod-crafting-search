@@ -1,11 +1,12 @@
 
 # Version history
 
-- 15 fu: refactor: renaming and moving
-- 14 fu: refactor: remove chat log
-- 13 fu: refactor: rm unused code
-- 12 fu: refactor: generate itemlists on demand
-- 11 fu: refactor: add helper module
+- 1 nu: item uses last used skin 
+- 100 fu: remove chat log
+- 50 fu: refactor: renaming and moving
+- 40 fu: refactor: rm unused code
+- 30 fu: refactor: generate itemlists on demand
+- 20 fu: refactor: add helper module
 - 10 fu: refactor: split code
 - 2 fu: custom modifier
 - 1 fu: configurable binding
