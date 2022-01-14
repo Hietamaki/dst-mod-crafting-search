@@ -25,6 +25,16 @@ local function isPlayerAvailable()
 	return DST and GLOBAL.ThePlayer ~= nil
 end
 
+local function getPlural(msg, amount)
+	if amount > 1 and string.sub(msg, -1) == "s" then
+		return amount.." "..msg
+	elseif amount > 1 then
+		return amount.." "..msg.."s"
+	else
+		return msg
+	end
+end
+
 local function craftItem(recipeName)
 	
 	if not isPlayerAvailable() then
@@ -44,55 +54,55 @@ local function craftItem(recipeName)
 	lastItem = recipeName
 
 	local icon = ICON_CRAFT
-
 	local localizedRecipeName = Helper:getReadableItemName(recipe.name)
+	local invented_msg = ""
+	local missing_msg = ""
 
 	if not builder:KnowsRecipe(recipeName) then
 		if  GLOBAL.CanPrototypeRecipe(recipe.level, builder:GetTechTrees()) and
 			builder:CanLearn(recipe.name) then
 			icon = ICON_INVENT
 		else
-			Helper:sendMessage(ICON_CANT_CRAFT.." I don't know the recipe for "..localizedRecipeName..".")
-        	return false
+			invented_msg = "I don't know the recipe for "..localizedRecipeName.."."
 		end
 	end
 
 	if not builder:IsBuildBuffered(recipeName) and not builder:CanBuild(recipeName) then
 		for i, v in ipairs(recipe.ingredients) do
 			if not builder.inst.replica.inventory:Has(v.type, math.max(1, GLOBAL.RoundBiasedUp(v.amount * builder:IngredientMod()))) then
-				local many = ""
-				if v.amount > 1 then
-					many = v.amount.." "
-				end
-				Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? I don't have "..many..v.type)
-				return false
+				missing_msg = missing_msg .." "..getPlural(v.type, v.amount) ..","
 			end
 		end
 		for i, v in ipairs(recipe.character_ingredients) do
 			if not builder:HasCharacterIngredient(v) then
-				Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? I don't have ".. v.type)
-				return false
+				missing_msg = missing_msg .." ".. v.type..","
             end
         end
         for i, v in ipairs(recipe.tech_ingredients) do
             if not builder:HasTechIngredient(v) then
-				Helper:sendMessage(ICON_CANT_CRAFT.." No tech ingredient for "..localizedRecipeName..".")
-                return false
+				missing_msg = missing_msg .." tech ingredient."
             end
         end
-		Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? Something wrong.")
-		return
+		--Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? Something wrong.")
 	end
-	
-	Helper:sendMessage(icon.." Crafting "..localizedRecipeName)
-	
-	if recipe.placer == nil then
-		builder:MakeRecipeFromMenu(recipe, GLOBAL.Profile:GetLastUsedSkinForItem(recipeName))
+
+	if invented_msg ~= "" and missing_msg == ""  then
+		Helper:sendMessage(ICON_CANT_CRAFT.." "..invented_msg)
+	elseif invented_msg == "" and missing_msg ~= ""  then
+		Helper:sendMessage(ICON_CANT_CRAFT.." "..localizedRecipeName.."? I don't have"..string.sub(missing_msg, 1, -2))
+	elseif invented_msg ~= "" and missing_msg ~= ""  then
+		Helper:sendMessage(ICON_CANT_CRAFT.." "..invented_msg .." Also I don't have"..string.sub(missing_msg, 1, -2))
 	else
-		if not builder:IsBuildBuffered(recipeName) then
-			builder:BufferBuild(recipeName)
+		Helper:sendMessage(icon.." Crafting "..localizedRecipeName)
+		
+		if recipe.placer == nil then
+			return builder:MakeRecipeFromMenu(recipe, GLOBAL.Profile:GetLastUsedSkinForItem(recipeName))
+		else
+			if not builder:IsBuildBuffered(recipeName) then
+				builder:BufferBuild(recipeName)
+			end
+			return GLOBAL.ThePlayer.components.playercontroller:StartBuildPlacementMode(recipe, nil)
 		end
-		GLOBAL.ThePlayer.components.playercontroller:StartBuildPlacementMode(recipe, nil)
 	end
 end
 

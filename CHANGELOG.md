@@ -1,7 +1,11 @@
 
 # Version history
-
-- 1 nu: item uses last used skin 
+- 200 pu: fix plurals in requirements
+- 100 pu: list all missed things
+- 30 pu: marketing: new screenshot
+- 20 pu: marketing: new description
+- 10 pu: marketing: new icon
+- 1 pu: item uses last used skin 
 - 100 fu: remove chat log
 - 50 fu: refactor: renaming and moving
 - 40 fu: refactor: rm unused code

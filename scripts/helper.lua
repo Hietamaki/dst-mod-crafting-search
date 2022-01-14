@@ -18,7 +18,7 @@ end
 
 function Helper:sendMessage(msg)
 	--function Talker:Say(script, time, noanim, force, nobroadcast, colour, text_filter_context, original_author_netid)
-	self._G.ThePlayer.components.talker:Say(msg, nil, nil, nil, nil)
+	self._G.ThePlayer.components.talker:Say(msg, 1+(#msg)/20, nil, nil, nil)
 end
 
 function Helper:getRawItemName(readableName)
