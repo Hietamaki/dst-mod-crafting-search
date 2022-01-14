@@ -143,6 +143,7 @@ function CraftInput:DoInit()
 	
 	self.chat_edit.OnTextInputted = function(text, k)
 		self.chat_edit:SetString(string.lower(self.chat_edit:GetString()))
+        self.chat_edit.prediction_widget:RefreshPredictions()
 		return false
 	end
 end

@@ -1,5 +1,6 @@
 
 # Version history
+- 300 pu: fix predictions updated when entered uppercase
 - 200 pu: fix plurals in requirements
 - 100 pu: list all missed things
 - 30 pu: marketing: new screenshot
