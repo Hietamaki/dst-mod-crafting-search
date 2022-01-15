@@ -16,12 +16,13 @@ local UserCommands = require("usercommands")
 local Helper = require "helper"
 local GLOBAL
 
-local CraftInput = Class(Screen, function(self, glob, craft_fn)
+local CraftInput = Class(Screen, function(self, glob, craft_fn, ui_type)
 	Screen._ctor(self, "CraftInput")
 	self._G = glob
     GLOBAL = glob
     self.craftItem = craft_fn
 	self.runtask = nil
+    self.ui_type = ui_type
 	self.is_crafting_input = true
 	Helper = Helper:new(self._G)
 
@@ -203,9 +204,7 @@ function CraftInput:DoInit()
         end
     end
 
-
-    self.chat_edit.prediction_widget.origOnRawKey = self.chat_edit.prediction_widget.OnRawKey
-    self.chat_edit.prediction_widget.OnRawKey = function(self, key, down)
+    local full_ui = function(self, key, down)
         local res = self:origOnRawKey(key, down)
         if self["prediction_btns"] then
 
@@ -243,6 +242,11 @@ function CraftInput:DoInit()
         end
 
         return res
+    end
+
+    if self.ui_type == "full" then
+        self.chat_edit.prediction_widget.origOnRawKey = self.chat_edit.prediction_widget.OnRawKey
+        self.chat_edit.prediction_widget.OnRawKey = full_ui
     end
 end
 

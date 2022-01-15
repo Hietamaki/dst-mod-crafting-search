@@ -16,6 +16,8 @@ local KEY_ENTER = GLOBAL.KEY_ENTER
 
 local bind = GetModConfigData("bind")
 local binded_modifier = GetModConfigData("modifier")
+local ui_type = GetModConfigData("ui")
+
 KEY_CRAFT_INPUT = GLOBAL[bind]
 
 state = {lastItem = "",skin=nil}
@@ -147,7 +149,7 @@ local function startInput()
 		return false
 	elseif activeScreen.name == "HUD" then
 		-- no menus open
-		TheFrontEnd:PushScreen(CraftInput(GLOBAL, craftItem))
+		TheFrontEnd:PushScreen(CraftInput(GLOBAL, craftItem, ui_type))
 	end
 end
 

@@ -1,5 +1,7 @@
 
 # Version history
+- 20 nu: recipe popup is configurable on/off
+- 10 nu: add skin support to recipies
 - 1 nu: show recipe popup
 - 300 pu: fix predictions updated when entered uppercase
 - 200 pu: fix plurals in requirements

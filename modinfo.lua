@@ -1,7 +1,7 @@
 name = 'Type to Craft'
 description = 'Finder for crafting. You can search and craft items with typing the recipe\'s name using only your keyboard. Allows building items quickly with predictive text and without having to navigate menus.\n\nCrafts the item with the skin that was last chosen.\n\n Default bindings:\n C = Open craft prompt.\n Shift+C = Repeat last craft.'
 author = 'Sakea'
-version = '0.0000000003'
+version = '0.00000002'
 forumthread = ''
 
 api_version = 10
@@ -30,6 +30,7 @@ configuration_options =
     options = {
       { description = "C", data = "KEY_C" },
       { description = "F", data = "KEY_F" },
+      { description = "G", data = "KEY_G" },
       { description = "R", data = "KEY_R" },
       { description = "X", data = "KEY_X" },
       { description = "F1 (F2 repeats)", data = "KEY_F1" },
@@ -49,5 +50,18 @@ configuration_options =
     },
 
     default = "KEY_SHIFT"
+  },
+  {
+    name = "ui",
+    label = "Crafting pop up",
+    hover = "Show crafting pop up with item info.",
+
+    options = {
+      { description = "On", data = "full" },
+--      { description = "Minimal", data = "minimal" },
+      { description = "Off", data = "off" },
+    },
+
+    default = "full"
   },
 }
