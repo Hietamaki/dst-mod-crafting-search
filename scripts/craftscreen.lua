@@ -63,11 +63,17 @@ end
 function CraftInput:Close()
     self._G.TheInput:EnableDebugToggle(true)
     TheFrontEnd:PopScreen(self)
+    return true
 end
 
 local function DoRun(inst, self)
     self.runtask = nil
     self:Run()
+    self:Close()
+end
+
+local function DoClose(inst, self)
+    self.runtask = nil
     self:Close()
 end
 
@@ -128,23 +134,40 @@ function CraftInput:DoInit()
     --self.chat_edit:EnableWhitespaceWrap(true)
     self.chat_edit:EnableRegionSizeLimit(true)
     self.chat_edit:EnableScrollEditWindow(false)
-
+    
+    local ci = self
 	self.chat_edit:SetForceEdit(true)
-    self.chat_edit.OnStopForceEdit = function() self:Close() end
 
+    local CloseMaybe = function()
+        if ci.recipe.shown == false then
+            ci:Close()
+        end
+        ci.chat_edit:Hide() ci.chat_type:Hide() self.chat_edit:SetForceEdit(false) ci.chat_edit:SetEditing(false)
+    end
+    self.chat_edit.OnStopForceEdit = CloseMaybe
+    --self.chat_edit.OnLoseFocus = function() TheFrontEnd:PopScreen(self) end
+    
     -- tausta?
     --self:AddChild(Image("images/hud.xml", "craft_bg.tex"))
     self.slot = self.root:AddChild(Image("images/hud.xml", "craft_slot.tex"))
     self.slot:SetPosition(-565, 270)
     self.slot:Hide()
     self.tile = self.root:AddChild(RecipeTile(nil))
+    self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
     self.recipe = self.root:AddChild(RecipePopup(false))
     self.recipe:SetPosition(-540, 250, 0)
-    self.recipe.button:Hide()  
+    self.recipe.OnLoseFocus = function() ci.recipe:Hide() ci.slot:Hide() ci.tile:Hide() ci.chat_edit:Show() ci.chat_type:Show() ci.chat_edit:SetForceEdit(true) ci.chat_edit:SetEditing(true) ci.chat_edit:SetFocus() end
+    --self.recipe.OnGainFocus = function() self:SetFocus() end
+    --self.recipe.button:Hide()
+   
     self.recipe:Hide()
-    self.slot:SetScaleMode(self._G.SCALEMODE_NONE)
-    self.tile:SetScaleMode(self._G.SCALEMODE_NONE)
-    self.recipe:SetScaleMode(self._G.SCALEMODE_NONE)
+    --self.recipe.origOnControl = self.recipe.OnControl
+    --self.recipe.OnControl = function(self, d, k) self:origOnControl(d, k) ci.chat_edit:SetFocus() end
+    --self.chat_edit.prediction_widget.OnControl = (function() return true end)
+
+    --self.slot:SetScaleMode(self._G.SCALEMODE_NONE)
+    --self.tile:SetScaleMode(self._G.SCALEMODE_NONE)
+    --self.recipe:SetScaleMode(self._G.SCALEMODE_NONE)
 
     --self.tile:SetPosition(-350, 100, 0)
     self.tile:SetPosition(-560, 273, 0)
@@ -152,7 +175,6 @@ function CraftInput:DoInit()
     --self.craft_name:SetPosition(-300, 80)
     --self.craft_name:SetHAlign(self._G.ANCHOR_LEFT)
 
-    self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
 
 	
 	local data = {
@@ -163,7 +185,6 @@ function CraftInput:DoInit()
 
 	self.chat_edit:AddWordPredictionDictionary(data)
     self.chat_edit:SetString("#")
-    local ci = self
 
 	
 	self.chat_edit.OnTextInputted = function(text, k)
@@ -188,6 +209,20 @@ function CraftInput:DoInit()
         local res = self:origOnRawKey(key, down)
         if self["prediction_btns"] then
 
+            local funkkari = function() 
+
+                local skin = nil
+                if ci.recipe["skins_spinner"] then
+                    skin = ci.recipe.skins_spinner.GetItem()
+                end
+                ci.craftItem(ci.recipe.recipe.name, skin)
+                ci.inst:DoTaskInTime(0, DoClose, ci)
+                return true
+            end
+
+            ci.recipe.button:SetWhileDown(funkkari)
+            ci.recipe.button:SetOnClick(funkkari)
+
             local item = self:GetSelectedItem()
             local recipe = GLOBAL.GetValidRecipe(item)
             if recipe == nil then
@@ -198,7 +233,7 @@ function CraftInput:DoInit()
             else
                 --print(ci._G.ThePlayer)
                 ci.recipe:SetRecipe(recipe, ci._G.ThePlayer)
-                ci.recipe.button:Hide()
+                --ci.recipe.button:Hide()
                 ci.recipe:Show()
                 ci.slot:Show()
                 ci.tile:SetRecipe(recipe)

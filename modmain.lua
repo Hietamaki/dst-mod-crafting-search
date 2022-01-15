@@ -18,7 +18,7 @@ local bind = GetModConfigData("bind")
 local binded_modifier = GetModConfigData("modifier")
 KEY_CRAFT_INPUT = GLOBAL[bind]
 
-local lastItem = ""
+state = {lastItem = "",skin=nil}
  
 local function isPlayerAvailable()
 	local DST = GLOBAL.TheSim:GetGameID() == "DST"
@@ -35,7 +35,7 @@ local function getPlural(msg, amount)
 	end
 end
 
-local function craftItem(recipeName)
+local function craftItem(recipeName, skin)
 	
 	if not isPlayerAvailable() then
 		return
@@ -51,7 +51,11 @@ local function craftItem(recipeName)
 		return
 	end
 
-	lastItem = recipeName
+	if skin ~= nil then
+		GLOBAL.Profile:SetLastUsedSkinForItem(recipeName, skin)
+	end
+
+	state.lastItem = recipeName
 
 	local icon = ICON_CRAFT
 	local localizedRecipeName = Helper:getReadableItemName(recipe.name)
@@ -95,8 +99,12 @@ local function craftItem(recipeName)
 	else
 		Helper:sendMessage(icon.." Crafting "..localizedRecipeName)
 		
+		if skin == nil then
+			skin = GLOBAL.Profile:GetLastUsedSkinForItem(recipeName)
+		end
+		
 		if recipe.placer == nil then
-			return builder:MakeRecipeFromMenu(recipe, GLOBAL.Profile:GetLastUsedSkinForItem(recipeName))
+			return builder:MakeRecipeFromMenu(recipe, skin)
 		else
 			if not builder:IsBuildBuffered(recipeName) then
 				builder:BufferBuild(recipeName)
@@ -117,8 +125,8 @@ end
 
 local function craftLast()
 	
-	if lastItem ~= "" then
-		craftItem(lastItem)
+	if state.lastItem ~= "" then
+		craftItem(state.lastItem, state.skin)
 	end
 end
 
