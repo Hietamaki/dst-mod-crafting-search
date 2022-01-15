@@ -1,5 +1,6 @@
 
 # Version history
+- 1 nu: show recipe popup
 - 300 pu: fix predictions updated when entered uppercase
 - 200 pu: fix plurals in requirements
 - 100 pu: list all missed things

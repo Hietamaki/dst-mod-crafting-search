@@ -2,6 +2,8 @@ require "util"
 
 local TextCompleter = require "util/textcompleter"
 local Screen = require "widgets/screen"
+local RecipePopup = require "widgets/recipepopup"
+local RecipeTile = require "widgets/recipetile"
 local TextEdit = require "widgets/textedit"
 local Widget = require "widgets/widget"
 local Text = require "widgets/text"
@@ -12,10 +14,12 @@ local Emoji = require("util/emoji")
 local UserCommands = require("usercommands")
 
 local Helper = require "helper"
+local GLOBAL
 
 local CraftInput = Class(Screen, function(self, glob, craft_fn)
 	Screen._ctor(self, "CraftInput")
 	self._G = glob
+    GLOBAL = glob
     self.craftItem = craft_fn
 	self.runtask = nil
 	self.is_crafting_input = true
@@ -78,13 +82,13 @@ function CraftInput:DoInit()
     self._G.TheInput:EnableDebugToggle(false)
 
     local label_height = 50
-    local fontsize = 30
+    local fontsize = 40
     local edit_width = 850
     local edit_width_padding = 0
     local chat_type_width = 150
 
     self.root = self:AddChild(Widget("chat_input_root"))
-    self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
+    --self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
     self.root:SetHAnchor(self._G.ANCHOR_MIDDLE)
     self.root:SetVAnchor(self._G.ANCHOR_BOTTOM)
     self.root = self.root:AddChild(Widget(""))
@@ -128,6 +132,26 @@ function CraftInput:DoInit()
 	self.chat_edit:SetForceEdit(true)
     self.chat_edit.OnStopForceEdit = function() self:Close() end
 
+    -- tausta?
+    --self:AddChild(Image("images/hud.xml", "craft_bg.tex"))
+    self.slot = self.root:AddChild(Image("images/hud.xml", "craft_slot.tex"))
+    self.slot:SetPosition(-565, 270)
+    self.slot:Hide()
+    self.tile = self.root:AddChild(RecipeTile(nil))
+    self.recipe = self.root:AddChild(RecipePopup(false))
+    self.recipe:SetPosition(-540, 250, 0)
+    self.recipe.button:Hide()  
+    self.recipe:Hide()
+    self.slot:SetScaleMode(self._G.SCALEMODE_NONE)
+    self.tile:SetScaleMode(self._G.SCALEMODE_NONE)
+    self.recipe:SetScaleMode(self._G.SCALEMODE_NONE)
+
+    --self.tile:SetPosition(-350, 100, 0)
+    self.tile:SetPosition(-560, 273, 0)
+    --self.craft_name = self.root:AddChild(Text(self._G.UIFONT, fontsize))
+    --self.craft_name:SetPosition(-300, 80)
+    --self.craft_name:SetHAlign(self._G.ANCHOR_LEFT)
+
     self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
 
 	
@@ -139,6 +163,7 @@ function CraftInput:DoInit()
 
 	self.chat_edit:AddWordPredictionDictionary(data)
     self.chat_edit:SetString("#")
+    local ci = self
 
 	
 	self.chat_edit.OnTextInputted = function(text, k)
@@ -146,18 +171,49 @@ function CraftInput:DoInit()
         self.chat_edit.prediction_widget:RefreshPredictions()
 		return false
 	end
+
+    self.chat_edit.prediction_widget.GetSelectedItem = function(self)
+        if #(self.prediction_btns) > 0 then
+            local strItem = self.prediction_btns[self.active_prediction_btn].text.string
+            
+            -- Remove #
+            strItem = strItem:match( "^#*(.-)#*$" )
+            return Helper:getRawItemName(strItem)
+        end
+    end
+
+
+    self.chat_edit.prediction_widget.origOnRawKey = self.chat_edit.prediction_widget.OnRawKey
+    self.chat_edit.prediction_widget.OnRawKey = function(self, key, down)
+        local res = self:origOnRawKey(key, down)
+        if self["prediction_btns"] then
+
+            local item = self:GetSelectedItem()
+            local recipe = GLOBAL.GetValidRecipe(item)
+            if recipe == nil then
+                ci.recipe:Hide()
+                ci.tile:Hide()
+                ci.slot:Hide()
+                --ci.craft_name:SetString("")
+            else
+                --print(ci._G.ThePlayer)
+                ci.recipe:SetRecipe(recipe, ci._G.ThePlayer)
+                ci.recipe.button:Hide()
+                ci.recipe:Show()
+                ci.slot:Show()
+                ci.tile:SetRecipe(recipe)
+                ci.tile:Show()
+                --ci.craft_name:SetString(Helper:getReadableItemName(item))
+            end
+        end
+
+        return res
+    end
 end
 
 function CraftInput:GetSelectedItem()
 	local pred_widget = self.chat_edit.prediction_widget
-
-	if #(pred_widget.prediction_btns) > 0 then
-		local strItem = pred_widget.prediction_btns[pred_widget.active_prediction_btn].text.string
-		
-		-- Remove #
-		strItem = strItem:match( "^#*(.-)#*$" )
-		return Helper:getRawItemName(strItem)
-	end
+	return pred_widget:GetSelectedItem()
 end
 
 
