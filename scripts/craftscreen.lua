@@ -95,7 +95,11 @@ function CraftInput:DoInit()
     local chat_type_width = 150
 
     self.root = self:AddChild(Widget("chat_input_root"))
-    --self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
+
+    if self.ui_type == "off" then
+        fontsize = 30
+        self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
+    end
     self.root:SetHAnchor(self._G.ANCHOR_MIDDLE)
     self.root:SetVAnchor(self._G.ANCHOR_BOTTOM)
     self.root = self.root:AddChild(Widget(""))

@@ -1,5 +1,6 @@
 
 # Version history
+- 30 nu: fix scaling without popup
 - 20 nu: recipe popup is configurable on/off
 - 10 nu: add skin support to recipies
 - 1 nu: show recipe popup
