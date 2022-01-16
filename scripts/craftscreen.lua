@@ -8,7 +8,6 @@ local TextEdit = require "widgets/textedit"
 local Widget = require "widgets/widget"
 local Text = require "widgets/text"
 local ImageButton = require "widgets/imagebutton"
-local ScrollableChatQueue = require "widgets/redux/scrollablechatqueue"
 --local VirtualKeyboard = require "screens/virtualkeyboard"
 local Emoji = require("util/emoji")
 local UserCommands = require("usercommands")
@@ -89,17 +88,14 @@ function CraftInput:DoInit()
     self._G.TheInput:EnableDebugToggle(false)
 
     local label_height = 50
-    local fontsize = 40
+    local fontsize = 30
     local edit_width = 850
     local edit_width_padding = 0
     local chat_type_width = 150
 
     self.root = self:AddChild(Widget("chat_input_root"))
 
-    if self.ui_type == "off" then
-        fontsize = 30
-        self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
-    end
+    self.root:SetScaleMode(self._G.SCALEMODE_PROPORTIONAL)
     self.root:SetHAnchor(self._G.ANCHOR_MIDDLE)
     self.root:SetVAnchor(self._G.ANCHOR_BOTTOM)
     self.root = self.root:AddChild(Widget(""))
@@ -136,7 +132,6 @@ function CraftInput:DoInit()
     self.chat_edit:SetPassControlToScreen(self._G.CONTROL_SCROLLFWD, true)
     self.chat_edit:SetTextLengthLimit(self._G.MAX_CHAT_INPUT_LENGTH)
     self.chat_edit:EnableWordWrap(false)
-    --self.chat_edit:EnableWhitespaceWrap(true)
     self.chat_edit:EnableRegionSizeLimit(true)
     self.chat_edit:EnableScrollEditWindow(false)
     
@@ -150,48 +145,19 @@ function CraftInput:DoInit()
         ci.chat_edit:Hide() ci.chat_type:Hide() self.chat_edit:SetForceEdit(false) ci.chat_edit:SetEditing(false)
     end
     self.chat_edit.OnStopForceEdit = CloseMaybe
-    --self.chat_edit.OnLoseFocus = function() TheFrontEnd:PopScreen(self) end
-    
-    -- tausta?
-    --self:AddChild(Image("images/hud.xml", "craft_bg.tex"))
-    self.slot = self.root:AddChild(Image("images/hud.xml", "craft_slot.tex"))
-    self.slot:SetPosition(-565, 270)
-    self.slot:Hide()
-    self.tile = self.root:AddChild(RecipeTile(nil))
-    self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
-    self.recipe = self.root:AddChild(RecipePopup(false))
-    self.recipe:SetPosition(-540, 250, 0)
-    self.recipe.OnLoseFocus = function() ci.recipe:Hide() ci.slot:Hide() ci.tile:Hide() ci.chat_edit:Show() ci.chat_type:Show() ci.chat_edit:SetForceEdit(true) ci.chat_edit:SetEditing(true) ci.chat_edit:SetFocus() end
-    --self.recipe.OnGainFocus = function() self:SetFocus() end
-    --self.recipe.button:Hide()
-   
-    self.recipe:Hide()
-    --self.recipe.origOnControl = self.recipe.OnControl
-    --self.recipe.OnControl = function(self, d, k) self:origOnControl(d, k) ci.chat_edit:SetFocus() end
-    --self.chat_edit.prediction_widget.OnControl = (function() return true end)
 
-    --self.slot:SetScaleMode(self._G.SCALEMODE_NONE)
-    --self.tile:SetScaleMode(self._G.SCALEMODE_NONE)
-    --self.recipe:SetScaleMode(self._G.SCALEMODE_NONE)
+    -- Word Prediction --
 
-    --self.tile:SetPosition(-350, 100, 0)
-    self.tile:SetPosition(-560, 273, 0)
-    --self.craft_name = self.root:AddChild(Text(self._G.UIFONT, fontsize))
-    --self.craft_name:SetPosition(-300, 80)
-    --self.craft_name:SetHAlign(self._G.ANCHOR_LEFT)
-
-
-	
-	local data = {
-		words = Helper:listReadableItemNames(),
+    local prediction_dictionary = {
+        words = Helper:listReadableItemNames(),
 		delim = "#",
 		--GetDisplayString = function(word) return word end
 	}
-
-	self.chat_edit:AddWordPredictionDictionary(data)
+    
+    self.chat_edit:EnableWordPrediction({width = 800, mode=self._G.Profile:GetChatAutocompleteMode()})
+	self.chat_edit:AddWordPredictionDictionary(prediction_dictionary)
     self.chat_edit:SetString("#")
 
-	
 	self.chat_edit.OnTextInputted = function(text, k)
 		self.chat_edit:SetString(string.lower(self.chat_edit:GetString()))
         self.chat_edit.prediction_widget:RefreshPredictions()
@@ -208,11 +174,35 @@ function CraftInput:DoInit()
         end
     end
 
+    -- Crafting Pop-up
+
+    --self:AddChild(Image("images/hud.xml", "craft_bg.tex"))
+    self.slot = self.root:AddChild(Image("images/hud.xml", "craft_slot.tex"))
+    self.tile = self.root:AddChild(RecipeTile(nil))
+    self.recipe = self.root:AddChild(RecipePopup(false))
+    self.slot:SetPosition(-565, 270)
+    self.tile:SetPosition(-560, 273, 0)
+    self.recipe:SetPosition(-540, 250, 0)
+    self.slot:SetScale(0.75, 0.75)
+    self.tile:SetScale(0.75, 0.75)
+    self.recipe:SetScale(0.75, 0.75)
+    self.slot:Hide()
+    self.recipe:Hide()
+    self.recipe.OnLoseFocus = function()
+        ci.recipe:Hide() ci.slot:Hide() ci.tile:Hide()
+        ci.chat_edit:Show() ci.chat_type:Show()
+        ci.chat_edit:SetForceEdit(true) ci.chat_edit:SetEditing(true) ci.chat_edit:SetFocus()
+    end
+    
+    --self.craft_name = self.root:AddChild(Text(self._G.UIFONT, fontsize))
+    --self.craft_name:SetPosition(-300, 80)
+    --self.craft_name:SetHAlign(self._G.ANCHOR_LEFT)
+	
     local full_ui = function(self, key, down)
         local res = self:origOnRawKey(key, down)
         if self["prediction_btns"] then
 
-            local funkkari = function() 
+            local buildIt = function() 
 
                 local skin = nil
                 if ci.recipe["skins_spinner"] then
@@ -223,8 +213,8 @@ function CraftInput:DoInit()
                 return true
             end
 
-            ci.recipe.button:SetWhileDown(funkkari)
-            ci.recipe.button:SetOnClick(funkkari)
+            ci.recipe.button:SetWhileDown(buildIt)
+            ci.recipe.button:SetOnClick(buildIt)
 
             local item = self:GetSelectedItem()
             local recipe = GLOBAL.GetValidRecipe(item)
@@ -234,7 +224,6 @@ function CraftInput:DoInit()
                 ci.slot:Hide()
                 --ci.craft_name:SetString("")
             else
-                --print(ci._G.ThePlayer)
                 ci.recipe:SetRecipe(recipe, ci._G.ThePlayer)
                 --ci.recipe.button:Hide()
                 ci.recipe:Show()
